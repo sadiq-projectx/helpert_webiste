@@ -1,13 +1,17 @@
+"use client";
+
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css"; // Import Swiper styles
+import { Autoplay, Pagination } from "swiper/modules"; // Removed Navigation module
+import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/navigation";
 import Image from "next/image";
-import styles from "@/styles/HeroBanner.module.css";
 
 interface Banner {
+  id: string;
+  title: string;
   image: string;
+  type: string;
 }
 
 interface HeroBannerProps {
@@ -20,27 +24,28 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners }) => {
   }
 
   return (
-    <div className={styles.heroBanner}>
+    <div className="relative w-full mt-[20px]"> {/* Adjusted margin to place banner below navbar */}
       <Swiper
+        modules={[Autoplay, Pagination]} // Removed Navigation module
         spaceBetween={20} // Space between slides
-        slidesPerView={1.2} // Show 80% of the current card
+        slidesPerView={1.5} // Show 80% of the current card
         loop={true} // Enable infinite loop
         autoplay={{
           delay: 3000, // Auto scroll every 3 seconds
           disableOnInteraction: false,
         }}
-        navigation={true} // Enable navigation arrows
         pagination={{ clickable: true }} // Enable pagination dots
       >
         {banners.map((banner, index) => (
-          <SwiperSlide key={index}>
-            <div className={styles.bannerContainer}>
+          <SwiperSlide key={banner.id}>
+            <div className="relative h-64 w-full rounded-3xl overflow-hidden shadow-md"> {/* Increased height to h-64 (16rem) */}
               <Image
                 src={banner.image}
-                alt={`Banner ${index + 1}`}
-                layout="fill"
-                objectFit="cover" // Ensure the image fills the container
-                className={styles.bannerImage}
+                alt={banner.title}
+                fill // Replaces layout="fill"
+                className="rounded-3xl object-cover" // CSS class for object fitting
+                unoptimized // Fix image not showing issue
+                priority={index === 0} // Add priority to the first image
               />
             </div>
           </SwiperSlide>
