@@ -47,6 +47,9 @@ export default function HomePage() {
       try {
         const data: HomeScreenModel = await fetchHomeScreenData();
 
+        // Log the raw API response to the console
+        console.log("API Full Response:", data);
+
         if (!data?.body?.data) {
           throw new Error("Invalid API response structure");
         }
