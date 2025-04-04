@@ -7,17 +7,17 @@ const SearchBar: React.FC = () => {
   const router = useRouter();
 
   const handleSearchClick = () => {
-    router.push("/search"); // Navigate to the search page
+    router.push("/search");
   };
 
   const handleNotificationClick = () => {
-    router.push("/notifications"); // Navigate to the notifications page
+    router.push("/notifications");
   };
 
   return (
-    <div className="flex items-center gap-4 px-4 py-2">
+    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 px-2 sm:px-4 py-2">
       {/* Search Input */}
-      <div className="flex-grow relative">
+      <div className="flex-grow relative w-full">
         <input
           type="text"
           placeholder="Search"
@@ -46,7 +46,7 @@ const SearchBar: React.FC = () => {
       {/* Notification Icon */}
       <button
         onClick={handleNotificationClick}
-        className="relative w-12 h-12 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 shadow-md"
+        className="relative w-12 h-12 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 shadow-md flex-shrink-0"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css"; // Import global styles
-import { ThemeProvider } from "../context/ThemeConfig"; // Import ThemeProvider
-import Navbar from "@/components/layout/Navbar"; // Import Navbar component
+import "./globals.css";
+import { ThemeProvider } from "../context/ThemeConfig";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
-// Load Inter font (Professional & Clean like LinkedIn/Twitter)
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  display: "swap", // Optimized font loading
+  display: "swap",
   variable: "--font-inter",
 });
 
-// SEO Optimization (Title, Description, OpenGraph, Twitter Meta)
 export const metadata: Metadata = {
   title: "Helpert - Book Experts for Any Advice",
   description: "Find top experts in astrology, psychology, yoga, and more. Book 1-on-1 sessions instantly.",
@@ -23,35 +22,38 @@ export const metadata: Metadata = {
     description: "Instantly connect with verified experts in various fields and get personalized guidance.",
     url: "https://www.helperts.com",
     siteName: "Helpert",
-    images: [
-      {
-        url: "/og-image.jpg", // Add a proper OpenGraph image
-        width: 1200,
-        height: 630,
-        alt: "Helpert - Find Experts for Any Advice",
-      },
-    ],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Helpert - Find Experts for Any Advice" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Helpert - Find Experts for Any Advice",
     description: "Book consultations with experts in various fields like astrology, psychology, and more.",
-    images: ["/og-image.jpg"], // Use the same OpenGraph image
+    images: ["/og-image.jpg"],
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="antialiased bg-background-color text-text-color font-sans">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body className="antialiased bg-background text-text-color font-sans flex flex-col min-h-screen">
         <ThemeProvider>
-          <Navbar /> {/* Include the Navbar component */}
-          {children} {/* Render the page content */}
+          {/* Navbar */}
+          <Navbar />
+
+          {/* Main Layout */}
+          <div className="flex flex-1 mt-[64px] max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            {/* Main Content */}
+            <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
+              {children}
+            </main>
+          </div>
+
+          {/* Footer */}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
