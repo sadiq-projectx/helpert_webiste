@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import ProfileHeader from "./ProfileHeader";
-import FollowStats from "./FollowStats";
+import { ProfileHeader } from "./ProfileHeader";
+import ShareModal from "./SharedModel";
 import ProfileTabs from "./ProfileTabs";
-import ShareModal from "./SharedModel"; // Assuming you have a ShareModal component
-import TextButton from "../../../components/ui/buttons/TextButton";
-import TextButtonWithPrefixIcon from "../../../components/ui/buttons/TextButtonWithPrefixIcon"; // Adjust the import path as necessary
+import { useRouter } from "next/navigation";
 
 interface HomeNormalUserProfileProps {
   user: {
@@ -14,7 +12,7 @@ interface HomeNormalUserProfileProps {
     lastName: string;
     username: string;
     profilePicture: string;
-    bio: string;
+    bio?: string;
     followers: number;
     following: number;
     joinedAt: string;
@@ -24,55 +22,58 @@ interface HomeNormalUserProfileProps {
 
 const HomeNormalUserProfile: React.FC<HomeNormalUserProfileProps> = ({ user }) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const router = useRouter();
 
   const handleShareClick = () => {
     setIsShareModalOpen(true);
   };
 
+  const handleEditProfileClick = () => {
+    router.push('/profile/edit');
+  };
+
+  const handleBecomeExpertClick = () => {
+    router.push('/become-expert');
+  };
+
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <>
       {/* Profile Header */}
       <ProfileHeader
-        profilePicture={user.profilePicture}
-        fullName={`${user.firstName} ${user.lastName}`}
         username={user.username}
-        bio={user.bio}
-        joinedAt={user.joinedAt}
-      />
-
-      {/* Follow Stats */}
-      <FollowStats
+        firstName={user.firstName}
+        lastName={user.lastName}
+        profilePicture={user.profilePicture}
+        bio={user.bio || ""}
         followers={user.followers}
         following={user.following}
+        joinedAt={user.joinedAt}
+        isExpert={user.isExpert}
         onShareClick={handleShareClick}
+        onEditProfileClick={handleEditProfileClick}
+        onBecomeExpertClick={handleBecomeExpertClick}
       />
 
-      {/* Buttons */}
-      <div className="flex gap-4 mt-6">
-        <TextButtonWithPrefixIcon
-          text="Become an Expert"
-          icon="fas fa-user-tie"
-          onClick={() => console.log("Navigate to Become an Expert")}
-          backgroundColor="blue"
-          textColor="white"
-        />
-        <TextButton
-          text="Edit Profile"
-          onClick={() => console.log("Navigate to Edit Profile")}
-          backgroundColor="transparent"
-          textColor="blue"
-          borderColor="blue"
-        />
+      {/* Content Tabs */}
+      <div className="max-w-4xl mx-auto mt-8">
+        <ProfileTabs />
       </div>
 
-      {/* Tabs for Appointments and Sessions */}
-      {user.isExpert && <ProfileTabs />}
-      
+      {/* Expert Services Section */}
+      {user.isExpert && (
+        <div className="max-w-4xl mx-auto mt-8">
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">Expert Services</h2>
+            {/* Add your expert services content here */}
+          </div>
+        </div>
+      )}
+
       {/* Share Modal */}
       {isShareModalOpen && (
         <ShareModal onClose={() => setIsShareModalOpen(false)} />
       )}
-    </div>
+    </>
   );
 };
 

@@ -15,13 +15,20 @@ const apiClient = axios.create({
   },
 });
 
-// Request Interceptor: Add Authorization Header
+// Request Interceptor: Add Authorization Header and x-api-key
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("jwtToken"); // Retrieve token from localStorage
+      // Add Authorization header if token exists
+      const token = localStorage.getItem("jwtToken");
       if (token) {
-        config.headers.Authorization = token.startsWith("Bearer") ? token : `Bearer ${token}`; // Add Authorization header
+        config.headers.Authorization = token.startsWith("Bearer") ? token : `Bearer ${token}`;
+      }
+      
+      // Add x-api-key header if it exists
+      const xApiKey = localStorage.getItem("x_api_key");
+      if (xApiKey) {
+        config.headers["x-api-key"] = xApiKey;
       }
     }
     return config;
@@ -38,10 +45,11 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       console.error("Unauthorized: Token is invalid or expired.");
-      // Optionally, redirect to login page or clear token
+      // Clear tokens and redirect to login page
       if (typeof window !== "undefined") {
         localStorage.removeItem("jwtToken");
-        window.location.href = "/auth/signin"; // Redirect to login page
+        localStorage.removeItem("x_api_key");
+        window.location.href = "/auth/signin";
       }
     } else if (error.response?.status === 500) {
       console.error("Server Error:", error.response.data);

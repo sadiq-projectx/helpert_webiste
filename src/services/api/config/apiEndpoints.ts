@@ -66,7 +66,7 @@ const ApiEndpoints = {
   setPortfolio: `${BASE_URL}/expert/portfolio/set/`,
   deletePortfolio: `${BASE_URL}/expert/portfolio/delete/`,
   addPortfolio: `${BASE_URL}/expert/portfolio/add`,
-  getProfile: `${BASE_URL}/expert`,
+  getProfile: `${BASE_URL}/expert/profile?expert_id=`,
   updateProfile: `${BASE_URL}/expert/updateExpert`,
   addSessionRate: `${BASE_URL}/expert/sessionrate`,
   getAllSlots: `${BASE_URL}/expert/slots/all`,

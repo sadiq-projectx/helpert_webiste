@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../context/ThemeConfig";
+import { UserProfileProvider } from "../context/UserProfileContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
@@ -41,19 +42,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased bg-background text-text-color font-sans flex flex-col min-h-screen">
         <ThemeProvider>
-          {/* Navbar */}
-          <Navbar />
+          <UserProfileProvider>
+            {/* Navbar */}
+            <Navbar />
 
-          {/* Main Layout */}
-          <div className="flex flex-1 mt-[64px] max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
             {/* Main Content */}
-            <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
-              {children}
+            <main className="flex-1 pt-[64px] pb-8">
+              <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                {children}
+              </div>
             </main>
-          </div>
 
-          {/* Footer */}
-          <Footer />
+            {/* Footer */}
+            <Footer />
+          </UserProfileProvider>
         </ThemeProvider>
       </body>
     </html>

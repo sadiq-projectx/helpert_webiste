@@ -22,21 +22,21 @@ const Navbar = () => {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-md z-50"
+      className="fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-md z-50"
       role="navigation"
       aria-label="Main Navigation"
     >
-      <div className="container mx-auto px-6 py-3 flex justify-between items-center max-w-[1440px]">
+      <div className="container mx-auto px-6 h-full flex justify-between items-center max-w-[1440px]">
         {/* Logo */}
-        <div className="flex items-center">
-          <Link href="/home" aria-label="Helpert Home">
+        <div className="flex items-center h-full py-2">
+          <Link href="/home" aria-label="Helpert Home" className="flex items-center h-full">
             <Image
-              src="/helpert-logo.svg" // Path to your SVG file in the /public directory
+              src="/helpert-logo.svg"
               alt="Helpert Logo"
-              className="w-24 h-auto sm:w-28 md:w-32 lg:w-36 xl:w-40 max-w-full" // Responsive width
-              width={150} // Fallback width for server-side rendering
-              height={50} // Fallback height for server-side rendering
-              priority // Ensures the logo loads quickly
+              className="h-10 w-auto object-contain"
+              width={120}
+              height={40}
+              priority
             />
           </Link>
         </div>
@@ -91,14 +91,14 @@ const Navbar = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="md:hidden bg-white dark:bg-gray-900 shadow-md absolute top-0 left-0 w-full h-screen z-40"
+            className="md:hidden bg-white dark:bg-gray-900 shadow-md absolute top-16 left-0 w-full z-40"
           >
-            <ul className="flex flex-col items-center justify-center h-full space-y-6">
+            <ul className="flex flex-col items-center py-6 space-y-6">
               {navItems.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-2 text-lg ${
+                    className={`flex items-center gap-2 text-base ${
                       pathname === item.href
                         ? "text-blue-600 dark:text-blue-400 font-semibold"
                         : "text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
