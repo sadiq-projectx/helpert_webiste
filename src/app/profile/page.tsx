@@ -1,5 +1,5 @@
 import React from "react";
-import HomeNormalUserProfile from "./componets/HomeNormalUserProfile";
+import HomeNormalUserProfile from "./components/HomeNormalUserProfile";
 
 export default function ProfilePage() {
   // Mock user data (replace with actual API data)
