@@ -20,9 +20,16 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
       // Add Authorization header if token exists
-      const token = localStorage.getItem("jwtToken");
+      const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
       if (token) {
-        config.headers.Authorization = token.startsWith("Bearer") ? token : `Bearer ${token}`;
+        // Ensure token has Bearer prefix
+        const formattedToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+        config.headers.Authorization = formattedToken;
+        
+        // Log token for debugging (remove in production)
+        console.log("Using token:", formattedToken.substring(0, 20) + "...");
+      } else {
+        console.log("No token found in storage");
       }
       
       // Add x-api-key header if it exists
@@ -48,9 +55,15 @@ apiClient.interceptors.response.use(
       // Clear tokens and redirect to login page
       if (typeof window !== "undefined") {
         localStorage.removeItem("jwtToken");
-        localStorage.removeItem("x_api_key");
+        localStorage.removeItem("userId");
+        sessionStorage.removeItem("jwtToken");
+        sessionStorage.removeItem("userId");
         window.location.href = "/auth/signin";
       }
+    } else if (error.response?.status === 403) {
+      console.error("Forbidden: You don't have permission to access this resource.");
+      // For 403 errors, we might want to handle differently than 401
+      // For now, we'll just log it
     } else if (error.response?.status === 500) {
       console.error("Server Error:", error.response.data);
     } else {

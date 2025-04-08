@@ -40,13 +40,13 @@ const HomeUserProfile: React.FC<HomeUserProfileProps> = ({ user }) => {
 
   const handleLogout = () => {
     // Clear any stored tokens or user data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('jwtToken');
+    localStorage.removeItem('userId');
+    sessionStorage.removeItem('jwtToken');
+    sessionStorage.removeItem('userId');
     
     // Redirect to login page
-    router.push('/login');
+    router.push('/auth/signin');
   };
 
   return (

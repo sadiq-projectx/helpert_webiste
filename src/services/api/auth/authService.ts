@@ -63,12 +63,24 @@ export const loginUser = async (
 
     const response = await apiClient.post(ApiEndpoints.login, payload);
 
-    // Extract the nested token and other data
+    // Log the full response for debugging
+    console.log("Login Response:", response.data);
+
+    if (!response.data?.body?.data) {
+      throw new Error("Invalid response format from server");
+    }
+
     const { jwt_token, user_id, email: userEmail } = response.data.body.data;
 
-    // Save the token and other details in localStorage
+    if (!jwt_token || !user_id) {
+      throw new Error("Missing authentication data in response");
+    }
+
+    // Save the token and other details in both localStorage and sessionStorage
     localStorage.setItem("jwtToken", jwt_token);
     localStorage.setItem("userId", user_id);
+    sessionStorage.setItem("jwtToken", jwt_token);
+    sessionStorage.setItem("userId", user_id);
 
     return {
       token: jwt_token,
@@ -80,6 +92,14 @@ export const loginUser = async (
     };
   } catch (error: unknown) {
     const err = error as AxiosError<ErrorResponse>;
+    console.error("Login Error:", err.response?.data || err.message);
+    
+    // Clear any existing tokens on error
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("userId");
+    sessionStorage.removeItem("jwtToken");
+    sessionStorage.removeItem("userId");
+    
     throw new Error(err.response?.data?.body?.message || "Failed to log in. Please try again.");
   }
 };

@@ -14,6 +14,8 @@ import ExperienceCard from "./components/ExperienceCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Calendar, MessageSquare } from "lucide-react";
+import { useUserProfile } from "@/contexts/UserProfileContext";
+import apiClient from "@/services/api/config/apiClient";
 
 export default function ExpertProfilePage() {
   const params = useParams();
@@ -22,6 +24,7 @@ export default function ExpertProfilePage() {
   const [expert, setExpert] = useState<ExpertProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated } = useUserProfile();
 
   useEffect(() => {
     const fetchExpertData = async () => {
@@ -34,12 +37,66 @@ export default function ExpertProfilePage() {
       try {
         setIsLoading(true);
         setError(null);
+        
+        // First try to get expert data from the dashboard if authenticated
+        if (isAuthenticated) {
+          try {
+            const dashboardResponse = await apiClient.get('/common/dashboard');
+            console.log("Dashboard API Response:", dashboardResponse.data);
+            
+            if (dashboardResponse.data?.body?.data?.top_rated_experts) {
+              // Find the expert in the top_rated_experts array
+              const expertFromDashboard = dashboardResponse.data.body.data.top_rated_experts.find(
+                (e: any) => e.id === params.id
+              );
+              
+              if (expertFromDashboard) {
+                console.log("Found expert in dashboard data:", expertFromDashboard);
+                // Transform the dashboard expert data to match our ExpertProfile type
+                const transformedExpert: ExpertProfile = {
+                  id: expertFromDashboard.id,
+                  username: expertFromDashboard.username,
+                  firstName: expertFromDashboard.first_name,
+                  lastName: expertFromDashboard.last_name,
+                  profilePicture: expertFromDashboard.profile_picture,
+                  specialization: expertFromDashboard.specialization,
+                  sessionRate: expertFromDashboard.session_rate,
+                  rating: expertFromDashboard.rating,
+                  appointments: expertFromDashboard.appointments,
+                  // Add other fields with default values
+                  bio: "",
+                  followers: 0,
+                  following: 0,
+                  joinedAt: new Date().toISOString(),
+                  description: "",
+                  happyClients: 0,
+                  booked: 0,
+                  isFollowing: false,
+                  location: "",
+                  userLocation: "",
+                  myExpertise: [],
+                  currentlyWorking: false,
+                  experience: "",
+                  portfolio: [],
+                  videobots: [],
+                  sessions: []
+                };
+                
+                setExpert(transformedExpert);
+                setIsLoading(false);
+                return;
+              }
+            }
+          } catch (dashboardError) {
+            console.error("Error fetching dashboard data:", dashboardError);
+            // Continue to fetch expert profile directly if dashboard fetch fails
+          }
+        }
+        
+        // If not authenticated or expert not found in dashboard, fetch directly
         const expertData = await getExpertProfile(params.id as string);
-        
         console.log("ExpertProfilePage - Raw expert data:", expertData);
-        console.log("ExpertProfilePage - Expertise data:", expertData.myExpertise);
         
-        // Simply set the expert data as is, since our components handle missing fields
         setExpert(expertData as ExpertProfile);
       } catch (err) {
         console.error("Error fetching expert data:", err);
@@ -50,7 +107,7 @@ export default function ExpertProfilePage() {
     };
 
     fetchExpertData();
-  }, [params?.id]);
+  }, [params?.id, isAuthenticated]);
 
   // Log the expert data whenever it changes
   useEffect(() => {
@@ -159,4 +216,4 @@ export default function ExpertProfilePage() {
       </div>
     </div>
   );
-} 
+}

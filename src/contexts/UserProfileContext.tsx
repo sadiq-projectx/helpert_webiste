@@ -1,115 +1,129 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getUserProfile, isAuthenticated } from '@/services/api/user/profileService';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import apiClient from "@/services/api/config/apiClient";
+
+type UserType = 'user' | 'expert' | 'guest';
 
 interface UserProfile {
   id: string;
-  username: string;
   firstName: string;
   lastName: string;
+  username: string;
   profilePicture: string;
   bio?: string;
   followers: number;
   following: number;
   joinedAt: string;
   isExpert: boolean;
-  // Add other fields as needed
+  specialization?: string;
+  experience?: string;
+  rating?: number;
+  totalReviews?: number;
 }
 
 interface UserProfileContextType {
   profile: UserProfile | null;
   isLoading: boolean;
   error: string | null;
-  refreshProfile: () => Promise<void>;
   isAuthenticated: boolean;
+  userType: UserType;
+  refreshProfile: () => Promise<void>;
 }
 
-const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
+const UserProfileContext = createContext<UserProfileContextType>({
+  profile: null,
+  isLoading: true,
+  error: null,
+  isAuthenticated: false,
+  userType: 'guest',
+  refreshProfile: async () => {},
+});
 
-export const UserProfileProvider = ({ children }: { children: ReactNode }) => {
+export const UserProfileProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [authStatus, setAuthStatus] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userType, setUserType] = useState<UserType>('guest');
 
-  const fetchProfile = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    // Check authentication status
-    const authenticated = isAuthenticated();
-    setAuthStatus(authenticated);
-    
-    if (!authenticated) {
-      console.log('User is not authenticated. Skipping profile fetch.');
-      setIsLoading(false);
-      return;
-    }
-    
+  const fetchUserData = async () => {
     try {
-      console.log('Fetching user profile...');
-      const data = await getUserProfile();
-      console.log('Raw profile data received:', data);
-      console.log('First_Name from data:', data.First_Name);
-      console.log('Last_Name from data:', data.Last_Name);
-      console.log('Follower from data:', data.Follower, 'type:', typeof data.Follower);
-      console.log('Following from data:', data.Following, 'type:', typeof data.Following);
+      // Get token from localStorage or sessionStorage
+      const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
       
-      // Check if the data has the expected structure
-      if (!data) {
-        console.error('Profile data is null or undefined');
-        setError('Failed to fetch profile: No data received');
+      if (!token) {
+        setUserType('guest');
+        setIsAuthenticated(false);
+        setIsLoading(false);
         return;
       }
+
+      // Fetch dashboard data which includes user profile
+      const response = await apiClient.get('/common/dashboard');
       
-      // Map the API response fields to our expected format
-      const profileData: UserProfile = {
-        id: data.id || 'unknown',
-        username: data.Username || 'unknown',
-        firstName: data.First_Name || 'Unknown',
-        lastName: data.Last_Name || 'User',
-        profilePicture: data.Profile_Picture || '/images/default-avatar.svg',
-        bio: data.bio || '',
-        followers: data.Follower || 0,
-        following: data.Following || 0,
-        joinedAt: data.Joined_At || 'Unknown date',
-        isExpert: data.isExpert || false,
+      if (!response.data?.body?.data?.user_detail) {
+        throw new Error('Invalid user data received');
+      }
+
+      const userData = response.data.body.data.user_detail;
+      
+      // Map the user data to our profile format
+      const userProfile: UserProfile = {
+        id: userData.id,
+        firstName: userData.first_name,
+        lastName: userData.last_name,
+        username: userData.username,
+        profilePicture: userData.profile_picture || '/assets/images/default-avatar.png',
+        bio: userData.bio || '',
+        followers: userData.followers || 0,
+        following: userData.following || 0,
+        joinedAt: userData.joined_at || new Date().toISOString(),
+        isExpert: userData.isExpert || false,
+        specialization: userData.specialization,
+        experience: userData.experience,
+        rating: userData.rating,
+        totalReviews: userData.total_reviews
       };
-      
-      console.log('Transformed profile data:', profileData);
-      console.log('firstName after transformation:', profileData.firstName);
-      console.log('lastName after transformation:', profileData.lastName);
-      console.log('followers after transformation:', profileData.followers, 'type:', typeof profileData.followers);
-      console.log('following after transformation:', profileData.following, 'type:', typeof profileData.following);
-      setProfile(profileData);
+
+      setProfile(userProfile);
+      setUserType(userData.isExpert ? 'expert' : 'user');
+      setIsAuthenticated(true);
+      setError(null);
     } catch (err) {
-      console.error('Error fetching profile:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch profile');
+      console.error('User data fetch error:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching user data');
+      setUserType('guest');
+      setIsAuthenticated(false);
+      
+      // Clear tokens on error
+      localStorage.removeItem('jwtToken');
+      localStorage.removeItem('userId');
+      sessionStorage.removeItem('jwtToken');
+      sessionStorage.removeItem('userId');
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProfile();
+    fetchUserData();
   }, []);
 
-  const refreshProfile = async () => {
-    await fetchProfile();
-  };
-
   return (
-    <UserProfileContext.Provider value={{ profile, isLoading, error, refreshProfile, isAuthenticated: authStatus }}>
+    <UserProfileContext.Provider
+      value={{
+        profile,
+        isLoading,
+        error,
+        isAuthenticated,
+        userType,
+        refreshProfile: fetchUserData,
+      }}
+    >
       {children}
     </UserProfileContext.Provider>
   );
 };
 
-export const useUserProfile = () => {
-  const context = useContext(UserProfileContext);
-  if (context === undefined) {
-    throw new Error('useUserProfile must be used within a UserProfileProvider');
-  }
-  return context;
-}; 
+export const useUserProfile = () => useContext(UserProfileContext); 
