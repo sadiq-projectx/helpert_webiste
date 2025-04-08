@@ -1,6 +1,6 @@
 import React from "react";
 import { ExpertProfile, Expertise } from "@/types/expert";
-import { useTheme } from "@/context/ThemeConfig";
+import { useTheme } from "@/contexts/ThemeConfig";
 
 interface ExpertiseSectionProps {
   expert: ExpertProfile;

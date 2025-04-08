@@ -1,9 +1,9 @@
 import React from "react";
 import { ExpertProfile } from "@/types/expert";
-import { useTheme } from "@/context/ThemeConfig";
+import { useTheme } from "@/contexts/ThemeConfig";
 import Image from "next/image";
 import { MapPin, Share2 } from "lucide-react";
-import { getFormattedLocation } from "@/lib/locationUtils";
+import { getFormattedLocation } from "@/utils/locationUtils";
 
 interface ExpertHeaderProps {
   expert: ExpertProfile;

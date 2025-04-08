@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ExpertProfile } from "@/types/expert";
-import { useTheme } from "@/context/ThemeConfig";
+import { useTheme } from "@/contexts/ThemeConfig";
 import { Book, Users, Calendar, Star, Briefcase } from "lucide-react";
 
 interface ExpertStatsProps {

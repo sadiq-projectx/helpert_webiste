@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { ExpertProfile, Videobot } from "@/types/expert";
-import { useTheme } from "@/context/ThemeConfig";
+import { useTheme } from "@/contexts/ThemeConfig";
 import { Play } from "lucide-react";
 
 interface ExpertVideosProps {

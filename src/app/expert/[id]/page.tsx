@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useTheme } from "@/context/ThemeConfig";
+import { useTheme } from "@/contexts/ThemeConfig";
 import { getExpertProfile } from "@/services/api/expert/expertService";
 import { ExpertProfile } from "@/types/expert";
 import ExpertHeader from "./components/ExpertHeader";

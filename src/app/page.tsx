@@ -8,7 +8,7 @@ import VideoCards from "@/components/home/VideoCards";
 import RecommendedExperts from "@/components/home/RecommendedExperts";
 import TopRatedExperts from "@/components/home/TopRatedExperts";
 import { fetchHomeScreenData } from "@/services/api/home/homeService";
-import { FEATURED_EXPERT } from "@/constants/imageConstants"; // Import the featured expert icon
+import { FEATURED_EXPERT } from "@/constants/assets/imageConstants"; // Import the featured expert icon
 import { HomeScreenModel, ExpertList, TopRatedExpert, WideRangeOfExpert, TrendingVideo } from "@/app/types/homescreenModel"; // Import HomeScreenModel
 
 interface Category {

@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faLinkedin } from "@fortawesome/free-brands-svg-icons"; // Import LinkedIn icon
-import { useTheme } from "../../context/ThemeConfig"; // Import the theme context
+import { useTheme } from "../../contexts/ThemeConfig"; // Import the theme context
 
 const SocialLoginWidget: React.FC = () => {
   const { themeColors } = useTheme(); // Access theme colors from ThemeContext

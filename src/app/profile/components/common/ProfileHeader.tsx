@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useTheme } from "../../../context/ThemeConfig";
+import { useTheme } from "../../../../contexts/ThemeConfig";
 
 interface ProfileHeaderProps {
   username: string;

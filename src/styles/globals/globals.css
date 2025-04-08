@@ -1,0 +1,166 @@
+/* Include Tailwind CSS layers - IMPORTANT: Keep this */
+@import "tailwindcss";
+
+/* === Base Theme Variables === */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-sans: "Inter", Arial, Helvetica, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* These are fallbacks if data-theme isn't set */
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* === Light Theme Definition === */
+[data-theme="light"] {
+  --background-color: #f0f8ff; /* AliceBlue */
+  --surface-color: #ffffff;     /* White for cards/elements */
+  --text-color: #1f2937;       /* Tailwind gray-800 (Good contrast) */
+  --secondary-text-color: #6b7280; /* Tailwind gray-500 */
+  --primary-color: #3b82f6;      /* Tailwind blue-500 */
+  /* Add other theme colors as needed (e.g., borders, accents) */
+  --border-color: #e5e7eb;      /* Tailwind gray-200 */
+}
+
+/* === Dark Theme Definition === */
+[data-theme="dark"] {
+  --background-color: #111827; /* Tailwind gray-900 */
+  --surface-color: #1f2937;     /* Tailwind gray-800 */
+  --text-color: #f3f4f6;       /* Tailwind gray-100 */
+  --secondary-text-color: #9ca3af; /* Tailwind gray-400 */
+  --primary-color: #60a5fa;      /* Tailwind blue-400 (Lighter for dark mode) */
+  /* Add other theme colors as needed */
+  --border-color: #374151;      /* Tailwind gray-700 */
+}
+
+/* === Apply Theme Variables & Base Body Styles === */
+body {
+  /* Apply theme variables with fallbacks to :root */
+  background-color: var(--background-color, var(--background));
+  color: var(--text-color, var(--foreground));
+  font-family: var(--font-sans);
+  transition: background-color 0.3s, color 0.3s;
+  scroll-behavior: smooth;
+  /* Optional: Add antialiasing for smoother fonts */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Scrollbar Hiding Utilities === */
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+/* Apply helper class if needed directly */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* === Horizontal Edge Fade Mask === */
+.horizontal-mask-gradient {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 5%,           /* Start fading in */
+    black 95%,          /* Solid in the middle */
+    transparent 100%   /* Fade out at the end */
+  );
+  /* Add vendor prefix for wider compatibility */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+}
+
+
+/* === Basic Typography Styles (Keep or Customize) === */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-color, var(--foreground)); /* Ensure headings use theme color */
+}
+
+h1 {
+  font-size: 2rem; /* 32px */
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 1.75rem; /* 28px */
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+p {
+  font-size: 1rem; /* 16px */
+  line-height: 1.6;
+  /* Inherits color from body, which is correct */
+}
+
+.small-text {
+  font-size: 0.875rem; /* 14px */
+  color: var(--secondary-text-color);
+}
+
+/* Link styles */
+a, .link { /* Apply base link styles to anchors and .link class */
+  color: var(--primary-color);
+  font-weight: 500; /* Adjusted weight slightly */
+  text-decoration: none;
+  transition: color 0.2s ease-in-out; /* Smooth color transition */
+}
+
+a:hover, .link:hover {
+  text-decoration: underline;
+  /* Optional: Slightly darken/lighten on hover */
+  /* filter: brightness(90%); */
+}
+
+
+/* === Custom Utility Classes for Theme Colors === */
+/* Use these in your components for theme-aware styling */
+.bg-background {
+  background-color: var(--background-color, var(--background));
+}
+.text-text-color {
+  color: var(--text-color, var(--foreground));
+}
+.text-secondary {
+  color: var(--secondary-text-color);
+}
+.bg-surface {
+  background-color: var(--surface-color);
+}
+.text-primary {
+  color: var(--primary-color);
+}
+.bg-primary {
+  background-color: var(--primary-color);
+}
+.border-theme { /* Example for a border using theme color */
+    border-color: var(--border-color);
+}
+
+/* === END OF CSS === */

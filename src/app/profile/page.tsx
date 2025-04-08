@@ -1,16 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import HomeNormalUserProfile from "./componets/HomeNormalUserProfile";
-import { useUserProfile } from "@/context/UserProfileContext";
+import HomeUserProfile from "../profile/components/user/HomeUserProfile";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import TextButton from "@/components/ui/buttons/TextButton";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { profile, isLoading, error, isAuthenticated } = useUserProfile();
 
+  useEffect(() => {
+    console.log('Profile Page Data:', {
+      profile,
+      isLoading,
+      error,
+      isAuthenticated
+    });
+  }, [profile, isLoading, error, isAuthenticated]);
+
   if (isLoading) {
+    console.log('Loading profile...');
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <div className="flex flex-col items-center space-y-4">
@@ -22,6 +32,7 @@ export default function ProfilePage() {
   }
 
   if (!isAuthenticated) {
+    console.log('User not authenticated');
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] p-4">
         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
@@ -42,6 +53,7 @@ export default function ProfilePage() {
   }
 
   if (error) {
+    console.error('Profile error:', error);
     return (
       <div className="flex justify-center items-center min-h-[50vh] p-4">
         <div className="bg-red-50 border border-red-200 rounded-xl shadow-lg p-6 max-w-md w-full">
@@ -58,6 +70,7 @@ export default function ProfilePage() {
   }
 
   if (!profile) {
+    console.log('No profile found');
     return (
       <div className="flex justify-center items-center min-h-[50vh] p-4">
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl shadow-lg p-6 max-w-md w-full">
@@ -73,5 +86,6 @@ export default function ProfilePage() {
     );
   }
 
-  return <HomeNormalUserProfile user={profile} />;
+  console.log('Rendering profile:', profile);
+  return <HomeUserProfile user={profile} />;
 }

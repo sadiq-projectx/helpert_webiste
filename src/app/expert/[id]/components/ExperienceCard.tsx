@@ -1,6 +1,6 @@
 import React from "react";
 import { ExpertProfile } from "@/types/expert";
-import { useTheme } from "@/context/ThemeConfig";
+import { useTheme } from "@/contexts/ThemeConfig";
 import { Briefcase, MapPin, Building, Calendar, User, Star, FileText } from "lucide-react";
 
 interface ExperienceCardProps {
