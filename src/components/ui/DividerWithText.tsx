@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme } from "../../context/ThemeConfig";
+import { useTheme } from "../../contexts/ThemeConfig";
 
 interface DividerWithTextProps {
   text: string;
