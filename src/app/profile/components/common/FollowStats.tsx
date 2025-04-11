@@ -1,5 +1,5 @@
 import React from "react";
-import IconButton from "../../../components/ui/buttons/IconButton"; // Adjust the import path as necessary
+import IconButton from "../../../../components/ui/buttons/IconButton"; // Adjust the import path as necessary
 
 interface FollowStatsProps {
   followers: number;

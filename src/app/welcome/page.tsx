@@ -1,19 +1,32 @@
 "use client"; // Mark this file as a client component
 
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import TextButton from "../../components/ui/buttons/TextButton";
 import DividerWithText from "../../components/ui/DividerWithText";
 import SocialLoginWidget from "../../components/ui/SocialLoginWidget";
 import RichTextWidget from "../../components/ui/RichTextWidget";
-import { useTheme } from "../../context/ThemeConfig";
+import { useTheme } from "../../contexts/ThemeConfig";
+import { guestLogin } from "@/services/api/user/guestService";
 
 export default function WelcomePage() {
-  const { themeColors } = useTheme() || {
-    backgroundColor: "#f9f9f9",
-    surfaceColor: "#ffffff",
-    textColor: "#333333",
-    secondaryTextColor: "#70757a",
-    primaryColor: "#007bff",
+  const router = useRouter();
+  const { themeColors } = useTheme();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGuestLogin = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await guestLogin();
+      router.push("/"); // Redirect to home page after successful guest login
+    } catch (err) {
+      setError("Failed to login as guest. Please try again.");
+      console.error("Guest login error:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -44,22 +57,29 @@ export default function WelcomePage() {
           </p>
         </div>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-center">
+            {error}
+          </div>
+        )}
+
         {/* Action Buttons Section */}
         <div className="flex flex-col items-center space-y-4">
           <TextButton
             text="Create an Account"
-            onClick={() => console.log("Navigate to Signup")}
+            onClick={() => router.push("/auth/signup")}
             backgroundColor={themeColors.primaryColor}
             textColor="#FFF"
             className="w-full py-3 rounded-md font-semibold"
           />
           <TextButton
-            text="Continue as Guest"
-            onClick={() => console.log("Guest Login")}
+            text={isLoading ? "Logging in..." : "Continue as Guest"}
+            onClick={handleGuestLogin}
             backgroundColor="transparent"
             textColor={themeColors.textColor}
             borderColor={themeColors.textColor}
             className="w-full py-3 border rounded-md font-semibold"
+            disabled={isLoading}
           />
           <DividerWithText text="or Sign Up with" />
           <div className="flex justify-center space-x-4">
@@ -75,7 +95,7 @@ export default function WelcomePage() {
               {
                 text: "Sign In",
                 color: themeColors.primaryColor,
-                onClick: () => console.log("Navigate to Login"),
+                onClick: () => router.push("/auth/signin"),
               },
             ]}
           />

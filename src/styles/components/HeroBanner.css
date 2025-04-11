@@ -1,0 +1,31 @@
+/* Keep pagination styles */
+.hero-banner-container .swiper-pagination {
+    position: absolute;
+    bottom: 8px !important;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto !important;
+    display: flex;
+    gap: 6px;
+    z-index: 30;
+  }
+  .hero-banner-container .swiper-pagination-bullet { /* ... */ }
+  .hero-banner-container .swiper-pagination-bullet-active { /* ... */ }
+  
+  /* Padding for pagination */
+  .hero-banner-container .swiper {
+     padding-bottom: 48px !important; /* Match !pb-12 */
+  }
+  
+  /* Styling for the slide itself */
+  .hero-banner-container .swiper-slide {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     box-sizing: border-box;
+  }
+  
+  /* Optional: If using autoHeight, ensure consistent vertical alignment */
+  /* .hero-banner-container .swiper-wrapper {
+    align-items: center; // Vertically align slides if heights vary significantly
+  } */

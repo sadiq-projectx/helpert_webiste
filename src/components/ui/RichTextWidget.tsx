@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme } from "../../context/ThemeConfig"; // Import the theme context
+import { useTheme } from "../../contexts/ThemeConfig"; // Import the theme context
 
 interface TextSegment {
   text: string;

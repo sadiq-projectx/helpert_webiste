@@ -22,12 +22,12 @@ const ApiEndpoints = {
   getUserInterests: `${BASE_URL}/interest/user`,
 
   // Appointment Endpoints
-  bookAppointment: `${BASE_URL}/appointments/book`,
-  updateAppointment: `${BASE_URL}/appointments/update`,
-  getAppointmentDetails: `${BASE_URL}/appointments/detail/`,
-  getAllAppointments: `${BASE_URL}/appointments/get/booked`,
-  updateApprovalStatus: `${BASE_URL}/appointments/approval/status/`,
-  updateAppointmentStatus: `${BASE_URL}/appointments/approval/status/`,
+  getAllAppointments: '/appointments',
+  getAppointmentDetails: '/appointments/',
+  bookAppointment: '/appointments',
+  updateAppointmentStatus: '/appointments/status/',
+  updateAppointment: '/appointments/',
+  getAgoraTokenByAppointmentId: '/appointments/agora-token',
 
   // Video Endpoints
   uploadVideo: `${BASE_URL}/video/upload`,
@@ -94,7 +94,6 @@ const ApiEndpoints = {
 
   // Miscellaneous Endpoints
   uploadAttachment: `${BASE_URL}/conversations/attachment/upload`,
-  getAgoraTokenByAppointmentId: `${BASE_URL}/appointments/agora`,
   getProfileDetails: `${BASE_URL}/user/profile?user_id=`,
   createOrder: `${BASE_URL}/booking/order/create`,
   startConversation: `${BASE_URL}/conversations/start`,

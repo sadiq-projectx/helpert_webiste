@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useUserProfile } from "@/context/UserProfileContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import TextInput from "@/components/ui/TextInput";
 import TextArea from "@/components/ui/TextArea";
 import TextButton from "@/components/ui/buttons/TextButton";

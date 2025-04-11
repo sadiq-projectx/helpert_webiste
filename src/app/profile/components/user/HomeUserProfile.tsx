@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { ProfileHeader } from "./ProfileHeader";
-import ShareModal from "./SharedModel";
-import ProfileTabs from "./ProfileTabs";
+import { ProfileHeader } from "../common/ProfileHeader";
+import ShareModal from "../common/SharedModel";
+import ProfileTabs from "../common/ProfileTabs";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
-interface HomeNormalUserProfileProps {
+interface HomeUserProfileProps {
   user: {
     firstName: string;
     lastName: string;
@@ -20,7 +22,7 @@ interface HomeNormalUserProfileProps {
   };
 }
 
-const HomeNormalUserProfile: React.FC<HomeNormalUserProfileProps> = ({ user }) => {
+const HomeUserProfile: React.FC<HomeUserProfileProps> = ({ user }) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const router = useRouter();
 
@@ -34,6 +36,17 @@ const HomeNormalUserProfile: React.FC<HomeNormalUserProfileProps> = ({ user }) =
 
   const handleBecomeExpertClick = () => {
     router.push('/become-expert');
+  };
+
+  const handleLogout = () => {
+    // Clear any stored tokens or user data
+    localStorage.removeItem('jwtToken');
+    localStorage.removeItem('userId');
+    sessionStorage.removeItem('jwtToken');
+    sessionStorage.removeItem('userId');
+    
+    // Redirect to login page
+    router.push('/auth/signin');
   };
 
   return (
@@ -53,6 +66,18 @@ const HomeNormalUserProfile: React.FC<HomeNormalUserProfileProps> = ({ user }) =
         onEditProfileClick={handleEditProfileClick}
         onBecomeExpertClick={handleBecomeExpertClick}
       />
+
+      {/* Logout Button */}
+      <div className="max-w-4xl mx-auto mt-4 flex justify-end">
+        <Button 
+          variant="outline" 
+          className="text-red-500 border-red-200 hover:bg-red-50"
+          onClick={handleLogout}
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Sign Out
+        </Button>
+      </div>
 
       {/* Content Tabs */}
       <div className="max-w-4xl mx-auto mt-8">
@@ -77,4 +102,4 @@ const HomeNormalUserProfile: React.FC<HomeNormalUserProfileProps> = ({ user }) =
   );
 };
 
-export default HomeNormalUserProfile;
+export default HomeUserProfile;

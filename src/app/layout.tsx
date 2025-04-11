@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "../context/ThemeConfig";
-import { UserProfileProvider } from "../context/UserProfileContext";
+import "../styles/globals/globals.css";
+import { ThemeProvider } from "@/contexts/ThemeConfig";
+import { UserProfileProvider } from "../contexts/UserProfileContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 

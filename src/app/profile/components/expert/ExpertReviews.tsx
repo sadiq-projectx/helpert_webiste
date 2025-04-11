@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
-import { useTheme } from "@/context/ThemeConfig";
+import React, { useEffect, useState } from "react";
+import { useTheme } from "@/contexts/ThemeConfig";
+import { getExpertReviews } from "@/services/api/expert/expertService";
 
 interface Review {
   id: string;
@@ -14,12 +15,38 @@ interface Review {
 }
 
 interface ExpertReviewsProps {
-  reviews: Review[];
+  expertId: string;
 }
 
-const ExpertReviews: React.FC<ExpertReviewsProps> = ({ reviews }) => {
+const ExpertReviews: React.FC<ExpertReviewsProps> = ({ expertId }) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const data = await getExpertReviews(expertId);
+        setReviews(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load reviews");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [expertId]);
+
+  if (isLoading) {
+    return <div className="text-center py-4">Loading reviews...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-4 text-red-500">{error}</div>;
+  }
 
   return (
     <div className="space-y-6">
