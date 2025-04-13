@@ -31,7 +31,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   onBecomeExpertClick = () => {},
 }) => {
   const [imgError, setImgError] = useState(false);
-  const { theme, themeColors } = useTheme();
+  const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   
   // Debug followers and following values
@@ -39,11 +39,22 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   console.log("ProfileHeader - following:", following, "type:", typeof following);
   
   const handleImageError = () => {
+    console.log("Image error occurred");
     setImgError(true);
   };
 
   // Check if user is new (no followers and no following)
   const isNewUser = followers === 0 && following === 0;
+  
+  // Use default profile picture if user hasn't uploaded one or if there's an error
+  const defaultProfilePicture = '/images/default-avatar.png';
+  const displayProfilePicture = (!profilePicture || profilePicture === "" || imgError) ? defaultProfilePicture : profilePicture;
+
+  console.log("Profile picture status:", {
+    original: profilePicture,
+    display: displayProfilePicture,
+    hasError: imgError
+  });
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -54,12 +65,12 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       
       {/* Profile Content */}
       <div className={`relative px-6 py-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-b-xl shadow-lg`}>
-        {/* Profile Picture - Positioned to overlap with cover image */}
+        {/* Profile Picture */}
         <div className="absolute -top-16 left-6">
-          <div className={`w-32 h-32 rounded-full overflow-hidden border-4 ${isDarkMode ? 'border-gray-800' : 'border-white'} shadow-lg`}>
+          <div className={`w-32 h-32 rounded-full overflow-hidden border-4 ${isDarkMode ? 'border-gray-800' : 'border-white'} shadow-lg bg-gray-200`}>
             <img
-              src={imgError ? '/images/default-avatar.png' : profilePicture}
-              alt={`${firstName}'s profile`}
+              src={displayProfilePicture}
+              alt={`${username}'s profile`}
               className="w-full h-full object-cover"
               onError={handleImageError}
             />

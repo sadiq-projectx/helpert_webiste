@@ -2,40 +2,67 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import TextButton from "@/components/ui/buttons/TextButton"; // Reusable TextButton component
-import LoadingSpinner from "@/components/ui/LoadingSpinner"; // Reusable LoadingSpinner component
+import TextButton from "@/components/ui/buttons/TextButton";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { fetchAllInterests, addUserInterests } from "@/services/api/user/interestService";
+import { AxiosError } from "axios";
+import Image from "next/image";
+import { useTheme } from "@/contexts/ThemeConfig";
 
 interface Interest {
   id: string;
   name: string;
-  interestIcon: string;
+  interest_icon: string;
+}
+
+interface ErrorResponse {
+  message?: string;
+  [key: string]: any;
 }
 
 export default function SelectInterestPage() {
   const [interests, setInterests] = useState<Interest[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // For displaying error messages
-  const [errorDetails, setErrorDetails] = useState<string | null>(null); // For debugging error details
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const router = useRouter();
   const minSelection = 5;
+  const { themeColors } = useTheme();
 
   // Fetch interests from the API
   useEffect(() => {
     const loadInterests = async () => {
       try {
-        const data = await fetchAllInterests();
-        console.log("Interests API Response:", data); // Log the response
-        if (Array.isArray(data)) {
-          setInterests(data);
-        } else {
-          throw new Error("Invalid response format: Expected an array");
+        const response = await fetchAllInterests();
+        console.log("Interests API Response:", response);
+        
+        // Handle different possible response structures
+        let interestsData: Interest[] = [];
+        
+        if (Array.isArray(response)) {
+          // Direct array response
+          interestsData = response;
+        } else if (response && typeof response === 'object') {
+          if (Array.isArray(response.data)) {
+            // Response with data property containing array
+            interestsData = response.data;
+          } else if (response.body && Array.isArray(response.body.data)) {
+            // Nested response structure
+            interestsData = response.body.data;
+          }
         }
-      } catch (error: any) {
+        
+        if (interestsData.length > 0) {
+          setInterests(interestsData);
+        } else {
+          throw new Error("No interests data found in the response");
+        }
+      } catch (error) {
         console.error("Error loading interests:", error);
-        setErrorDetails(JSON.stringify(error.response?.data || error.message)); // Log error details
-        if (error.response?.status === 401) {
+        setErrorDetails(JSON.stringify(error instanceof AxiosError ? error.response?.data : error));
+        if (error instanceof AxiosError && error.response?.status === 401) {
           setErrorMessage("Session expired. Please log in again.");
         } else {
           setErrorMessage("Failed to load interests. Please try again later.");
@@ -69,23 +96,29 @@ export default function SelectInterestPage() {
       return;
     }
 
-    setIsLoading(true);
-    setErrorMessage(null); // Clear any previous error messages
-    setErrorDetails(null); // Clear any previous error details
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setErrorDetails(null);
     try {
       await addUserInterests(selectedInterests);
-      router.push("/dashboard"); // Navigate to the dashboard
-    } catch (error: any) {
+      router.push("/");
+    } catch (error) {
       console.error("Error saving interests:", error);
-      setErrorDetails(JSON.stringify(error.response?.data || error.message)); // Log error details
-      if (error.response?.status === 401) {
+      setErrorDetails(JSON.stringify(error instanceof AxiosError ? error.response?.data : error));
+      if (error instanceof AxiosError && error.response?.status === 401) {
         setErrorMessage("Session expired. Please log in again.");
       } else {
         setErrorMessage("Failed to save interests. Please try again.");
       }
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
+  };
+
+  // Handle image error
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.error("Image failed to load:", e.currentTarget.src);
+    e.currentTarget.src = "/images/fallback-icon.png"; // Fallback image
   };
 
   return (
@@ -100,12 +133,14 @@ export default function SelectInterestPage() {
 
         {/* Error Message */}
         {errorMessage && (
-          <div className="text-red-500 text-sm text-center mb-4">{errorMessage}</div>
+          <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-md text-sm mb-4">
+            {errorMessage}
+          </div>
         )}
 
         {/* Debugging Error Details */}
         {errorDetails && (
-          <div className="text-gray-500 text-xs bg-gray-100 p-2 rounded mb-4 overflow-auto max-h-32">
+          <div className="text-gray-500 text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded mb-4 overflow-auto max-h-32">
             <strong>Error Details:</strong>
             <pre>{errorDetails}</pre>
           </div>
@@ -113,31 +148,32 @@ export default function SelectInterestPage() {
 
         {/* Interests Section */}
         {isLoading ? (
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center py-12">
             <LoadingSpinner />
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {interests.map((interest) => {
               const isSelected = selectedInterests.includes(interest.id);
               return (
                 <div
                   key={interest.id}
                   onClick={() => toggleInterest(interest.id)}
-                  className={`cursor-pointer border rounded-lg p-4 flex items-center justify-center space-x-2 ${
+                  className={`cursor-pointer border rounded-lg p-4 flex items-center justify-center space-x-2 transition-all duration-200 hover:shadow-md ${
                     isSelected
                       ? "bg-blue-500 border-blue-500 text-white"
-                      : "bg-transparent border-gray-300 text-gray-800 dark:text-gray-200"
+                      : "bg-transparent border-gray-300 text-gray-800 dark:text-gray-200 hover:border-blue-300"
                   }`}
                 >
-                  <img
-                    src={interest.interestIcon}
-                    alt={interest.name}
-                    className="w-6 h-6"
-                    onError={(e) => {
-                      e.currentTarget.src = "/fallback-image.png"; // Replace with fallback image
-                    }}
-                  />
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <img
+                      src={interest.interest_icon}
+                      alt={interest.name}
+                      className="w-6 h-6 object-contain"
+                      onError={handleImageError}
+                      loading="lazy"
+                    />
+                  </div>
                   <span className="text-sm font-medium">{interest.name}</span>
                 </div>
               );
@@ -145,22 +181,25 @@ export default function SelectInterestPage() {
           </div>
         )}
 
+        {/* Selection Counter */}
+        <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+          {selectedInterests.length} of {minSelection} interests selected
+        </div>
+
         {/* Continue Button */}
         <div className="mt-6">
           <TextButton
-            text="Continue"
+            text={isSubmitting ? "Saving..." : "Continue"}
             onClick={handleContinue}
             textColor="white"
-            backgroundColor={
-              selectedInterests.length >= minSelection ? "#3b82f6" : "#93c5fd"
-            }
+            backgroundColor={selectedInterests.length >= minSelection ? themeColors.primaryColor : "blue-400"}
             borderColor="transparent"
             className={`w-full py-3 font-semibold ${
-              selectedInterests.length < minSelection
-                ? "cursor-not-allowed opacity-50"
-                : "hover:bg-blue-600"
+              selectedInterests.length < minSelection || isSubmitting
+                ? "cursor-not-allowed opacity-70"
+                : ""
             }`}
-            disabled={selectedInterests.length < minSelection}
+            disabled={selectedInterests.length < minSelection || isSubmitting}
           />
         </div>
       </div>

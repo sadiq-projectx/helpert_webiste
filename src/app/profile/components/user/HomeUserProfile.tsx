@@ -6,7 +6,7 @@ import ShareModal from "../common/SharedModel";
 import ProfileTabs from "../common/ProfileTabs";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 
 interface HomeUserProfileProps {
   user: {
@@ -25,6 +25,11 @@ interface HomeUserProfileProps {
 const HomeUserProfile: React.FC<HomeUserProfileProps> = ({ user }) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const router = useRouter();
+
+  // Use default profile picture if user hasn't updated their profile picture
+  const profilePicture = user.profilePicture || "/images/default-avatar.png";
+  
+  console.log("HomeUserProfile - profile picture:", profilePicture);
 
   const handleShareClick = () => {
     setIsShareModalOpen(true);
@@ -56,7 +61,7 @@ const HomeUserProfile: React.FC<HomeUserProfileProps> = ({ user }) => {
         username={user.username}
         firstName={user.firstName}
         lastName={user.lastName}
-        profilePicture={user.profilePicture}
+        profilePicture={profilePicture}
         bio={user.bio || ""}
         followers={user.followers}
         following={user.following}
