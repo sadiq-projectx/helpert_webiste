@@ -23,10 +23,17 @@ This project is configured for easy deployment to Vercel:
 
 ## Environment Variables
 
-The following environment variables may be required:
+The following environment variables are required:
 
-- `NEXT_PUBLIC_API_URL`: The URL of your API
-- `NEXT_PUBLIC_APP_URL`: The URL of your application
+- `NEXT_PUBLIC_API_BASE_URL`: The base URL of your API (e.g., https://api.helpert.com)
+- `NEXT_PUBLIC_APP_URL`: The URL of your application (e.g., https://helpert.com)
+
+### Setting Environment Variables in Vercel
+
+1. Go to your project in the Vercel dashboard
+2. Navigate to Settings > Environment Variables
+3. Add the required environment variables
+4. Redeploy your application
 
 ## Troubleshooting
 
