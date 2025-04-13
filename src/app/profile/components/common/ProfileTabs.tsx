@@ -1,51 +1,22 @@
 import React, { useState } from "react";
 import { useTheme } from "../../../../contexts/ThemeConfig";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const ProfileTabs: React.FC = () => {
   const [activeTab, setActiveTab] = useState("appointments");
   const { theme, themeColors } = useTheme();
   const isDarkMode = theme === "dark";
+  const router = useRouter();
 
-  // Mock data for appointments and sessions
-  const appointments = [
-    {
-      id: "1",
-      expertName: "Dr. Sarah Johnson",
-      date: "2023-06-15",
-      time: "10:00 AM",
-      status: "upcoming",
-      expertImage: "/assets/images/default-avatar.png"
-    },
-    {
-      id: "2",
-      expertName: "Dr. Michael Chen",
-      date: "2023-06-10",
-      time: "2:30 PM",
-      status: "completed",
-      expertImage: "/assets/images/default-avatar.png"
-    }
-  ];
+  // Empty arrays instead of mock data
+  const appointments: any[] = [];
+  const sessions: any[] = [];
 
-  const sessions = [
-    {
-      id: "1",
-      title: "Career Development",
-      date: "2023-06-20",
-      time: "11:00 AM",
-      status: "upcoming",
-      expertName: "Dr. Sarah Johnson",
-      expertImage: "/assets/images/default-avatar.png"
-    },
-    {
-      id: "2",
-      title: "Mental Health Check-in",
-      date: "2023-06-05",
-      time: "3:00 PM",
-      status: "completed",
-      expertName: "Dr. Michael Chen",
-      expertImage: "/assets/images/default-avatar.png"
-    }
-  ];
+  const handleFindExperts = () => {
+    router.push("/experts");
+  };
 
   return (
     <div className={`mt-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
@@ -131,6 +102,15 @@ const ProfileTabs: React.FC = () => {
                 </svg>
                 <h3 className="mt-2 text-sm font-medium">No appointments</h3>
                 <p className="mt-1 text-sm">You don't have any appointments scheduled.</p>
+                <div className="mt-4">
+                  <Button 
+                    onClick={handleFindExperts}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Search className="mr-2 h-4 w-4" />
+                    Find Experts
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -193,6 +173,15 @@ const ProfileTabs: React.FC = () => {
                 </svg>
                 <h3 className="mt-2 text-sm font-medium">No sessions</h3>
                 <p className="mt-1 text-sm">You don't have any sessions scheduled.</p>
+                <div className="mt-4">
+                  <Button 
+                    onClick={handleFindExperts}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Search className="mr-2 h-4 w-4" />
+                    Find Experts
+                  </Button>
+                </div>
               </div>
             )}
           </div>

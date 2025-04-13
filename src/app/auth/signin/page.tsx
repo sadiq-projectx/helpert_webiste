@@ -6,6 +6,7 @@ import TextInput from "@/components/ui/TextInput"; // Import reusable TextInput 
 import SocialLoginWidget from "@/components/ui/SocialLoginWidget"; // Import reusable SocialLoginWidget component
 import TextButton from "@/components/ui/buttons/TextButton"; // Import reusable TextButton component
 import { loginUser } from "@/services/api/auth/authService"; // Import the loginUser service
+import { useTheme } from "@/contexts/ThemeConfig";
 
 export default function SignInPage() {
   const [emailOrUsername, setEmailOrUsername] = useState(""); // Updated to allow email or username
@@ -14,6 +15,7 @@ export default function SignInPage() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { themeColors } = useTheme();
 
   // Validate form fields
   const validateForm = () => {
@@ -64,9 +66,6 @@ export default function SignInPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4">
-      {/* Background Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-
       {/* Sign-In Card */}
       <div className="relative z-10 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4">
@@ -136,10 +135,10 @@ export default function SignInPage() {
             text={isLoading ? "Signing In..." : "Sign In"}
             onClick={handleSignIn}
             textColor="white"
-            backgroundColor={isFormValid ? "#3b82f6" : "#93c5fd"}
+            backgroundColor={isFormValid ? themeColors.primaryColor : "blue-400"}
             borderColor="transparent"
             className={`w-full py-3 font-semibold ${
-              isLoading ? "cursor-not-allowed" : "hover:bg-blue-600"
+              isLoading ? "cursor-not-allowed" : ""
             }`}
             disabled={!isFormValid || isLoading}
           />

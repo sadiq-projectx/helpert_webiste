@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image"; // Import Image for optimized loading
 import { usePathname } from "next/navigation";
@@ -10,10 +10,16 @@ import { Menu, X, Home, Calendar, Flame, MessageCircle, User } from "lucide-reac
 const Navbar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false); // State for mobile menu toggle
+  const [mounted, setMounted] = useState(false);
+
+  // Only render client-side components after hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Define navigation items with professional icons
   const navItems = [
-    { label: "Home", href: "/home", icon: <Home size={20} /> },
+    { label: "Home", href: "/", icon: <Home size={20} /> },
     { label: "Meetings", href: "/appointments", icon: <Calendar size={20} /> },
     { label: "Feed", href: "/video-feed", icon: <Flame size={20} /> },
     { label: "Messages", href: "/messages", icon: <MessageCircle size={20} /> },
@@ -29,7 +35,7 @@ const Navbar = () => {
       <div className="container mx-auto px-6 h-full flex justify-between items-center max-w-[1440px]">
         {/* Logo */}
         <div className="flex items-center h-full py-2">
-          <Link href="/home" aria-label="Helpert Home" className="flex items-center h-full">
+          <Link href="/" aria-label="Helpert Home" className="flex items-center h-full">
             <Image
               src="/helpert-logo.svg"
               alt="Helpert Logo"
@@ -48,7 +54,7 @@ const Navbar = () => {
               <Link
                 href={item.href}
                 className={`flex flex-col items-center text-sm transition duration-300 ${
-                  pathname === item.href
+                  mounted && pathname === item.href
                     ? "text-blue-600 dark:text-blue-400 font-semibold"
                     : "text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                 }`}
@@ -56,14 +62,14 @@ const Navbar = () => {
               >
                 <span>{item.icon}</span>
                 <span>{item.label}</span>
-                {pathname === item.href && (
-                  <motion.div
-                    layoutId="underline"
-                    className="absolute -bottom-1 h-1 w-full bg-blue-600 dark:bg-blue-400 rounded-full"
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
               </Link>
+              {mounted && pathname === item.href && (
+                <motion.div
+                  layoutId="underline"
+                  className="absolute -bottom-1 h-1 w-full bg-blue-600 dark:bg-blue-400 rounded-full"
+                  transition={{ duration: 0.3 }}
+                />
+              )}
             </li>
           ))}
         </ul>
@@ -99,7 +105,7 @@ const Navbar = () => {
                   <Link
                     href={item.href}
                     className={`flex items-center gap-2 text-base ${
-                      pathname === item.href
+                      mounted && pathname === item.href
                         ? "text-blue-600 dark:text-blue-400 font-semibold"
                         : "text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                     }`}

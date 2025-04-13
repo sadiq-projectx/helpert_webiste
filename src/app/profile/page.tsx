@@ -9,7 +9,7 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 import TextButton from "@/components/ui/buttons/TextButton";
 import { useTheme } from "@/contexts/ThemeConfig";
 import { Button } from "@/components/ui/button";
-import { Calendar, MessageSquare, LogOut } from "lucide-react";
+import { Calendar, MessageSquare, LogOut, Edit, PlusCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ExpertHeader from "../expert/[id]/components/ExpertHeader";
 import ExpertStats from "../expert/[id]/components/ExpertStats";
@@ -178,16 +178,18 @@ export default function ProfilePage() {
               <Button 
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 size="lg"
+                onClick={() => router.push('/create-post')}
               >
-                <Calendar className="mr-2 h-5 w-5" />
-                Book a Call
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Create Post
               </Button>
               <Button 
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                 size="lg"
+                onClick={() => router.push('/profile/edit')}
               >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Chat
+                <Edit className="mr-2 h-5 w-5" />
+                Edit Profile
               </Button>
               <Button 
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white"

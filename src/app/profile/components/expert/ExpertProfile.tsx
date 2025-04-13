@@ -5,7 +5,7 @@ import { ProfileHeader } from "../common/ProfileHeader";
 import ShareModal from "../common/SharedModel";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { LogOut, Calendar, MessageSquare } from "lucide-react";
+import { LogOut, Calendar, MessageSquare, Edit, PlusCircle } from "lucide-react";
 import ExpertReviews from "./ExpertReviews";
 import ExperienceCard from "./ExperienceCard";
 import ExpertHeader from "./ExpertHeader";
@@ -42,12 +42,22 @@ const ExpertProfile: React.FC<ExpertProfileProps> = ({ expert }) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
+  // Use default profile picture if expert hasn't updated their profile picture
+  const profilePicture = expert.profilePicture || "/images/default-avatar.png";
+  
+  // Log the profile picture path for debugging
+  console.log("Expert profile picture path:", profilePicture);
+
   const handleShareClick = () => {
     setIsShareModalOpen(true);
   };
 
   const handleEditProfileClick = () => {
     router.push('/profile/edit');
+  };
+
+  const handleCreatePost = () => {
+    router.push('/create-post');
   };
 
   const handleLogout = () => {
@@ -87,7 +97,7 @@ const ExpertProfile: React.FC<ExpertProfileProps> = ({ expert }) => {
           username={expert.username}
           firstName={expert.firstName}
           lastName={expert.lastName}
-          profilePicture={expert.profilePicture}
+          profilePicture={profilePicture}
           bio={expert.bio || ""}
           followers={expert.followers}
           following={expert.following}
@@ -114,16 +124,18 @@ const ExpertProfile: React.FC<ExpertProfileProps> = ({ expert }) => {
           <Button 
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
             size="lg"
+            onClick={handleCreatePost}
           >
-            <Calendar className="mr-2 h-5 w-5" />
-            Book a Call
+            <PlusCircle className="mr-2 h-5 w-5" />
+            Create Post
           </Button>
           <Button 
             className="flex-1 bg-green-600 hover:bg-green-700 text-white"
             size="lg"
+            onClick={handleEditProfileClick}
           >
-            <MessageSquare className="mr-2 h-5 w-5" />
-            Chat
+            <Edit className="mr-2 h-5 w-5" />
+            Edit Profile
           </Button>
         </div>
 
