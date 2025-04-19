@@ -57,7 +57,7 @@ if (fs.existsSync(envFilePath)) {
 } else {
   console.log('.env.local file not found. Using default values...');
   envVars = {
-    NEXT_PUBLIC_API_BASE_URL: 'https://api.helperts.com',
+    NEXT_PUBLIC_API_BASE_URL: 'https://api.helperts.com/api',
     NEXT_PUBLIC_APP_URL: 'https://helperts.com'
   };
 }
