@@ -64,42 +64,37 @@ const SearchBar: React.FC = () => {
       {/* Notification Button (using Link for navigation) */}
       <Link
         href="/notifications"
-        passHref // Necessary for custom component/tag inside Link
-        legacyBehavior // Required when wrapping an `<a>` or custom component that isn't just text
+        aria-label="View notifications" // Aria-label for the link
+        className="relative w-11 h-11 flex items-center justify-center rounded-lg border // Use border like input
+                   bg-surface text-secondary // Theme colors
+                   border-gray-200 dark:border-gray-700 // Subtle border
+                   hover:bg-gray-100 dark:hover:bg-gray-700/50 // Hover state
+                   focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary // Ring focus state
+                   flex-shrink-0 transition-colors"
       >
-        <a // Use an anchor tag for semantic link, styled as a button
-          aria-label="View notifications" // Aria-label for the link
-          className="relative w-11 h-11 flex items-center justify-center rounded-lg border // Use border like input
-                     bg-surface text-secondary // Theme colors
-                     border-gray-200 dark:border-gray-700 // Subtle border
-                     hover:bg-gray-100 dark:hover:bg-gray-700/50 // Hover state
-                     focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary // Ring focus state
-                     flex-shrink-0 transition-colors"
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6" // Icon size
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={1.8} // Match search icon stroke?
+          aria-hidden="true" // Hide decorative icon
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6" // Icon size
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.8} // Match search icon stroke?
-            aria-hidden="true" // Hide decorative icon
-          >
-             <title>Notifications Icon</title> {/* SVG Title */}
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0m6 0H9"
-            />
-          </svg>
-          {/* Notification Dot (Conditional Rendering) */}
-          {hasNotifications && (
-            <span
-               className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-background" // Added border to pop against icon
-               aria-hidden="true" // Hide dot itself, label on button is sufficient
-            ></span>
-          )}
-        </a>
+           <title>Notifications Icon</title> {/* SVG Title */}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0m6 0H9"
+          />
+        </svg>
+        {/* Notification Dot (Conditional Rendering) */}
+        {hasNotifications && (
+          <span
+             className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-background" // Added border to pop against icon
+             aria-hidden="true" // Hide dot itself, label on button is sufficient
+          ></span>
+        )}
       </Link>
     </div>
   );
