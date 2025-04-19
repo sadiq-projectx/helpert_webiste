@@ -38,8 +38,9 @@ export default function ExpertProfilePage() {
         setIsLoading(true);
         setError(null);
         
-        // First try to get expert data directly from the expert profile API
+        // Try to get expert data directly from the expert profile API
         try {
+          console.log("Attempting to fetch expert profile directly");
           const expertData = await getExpertProfile(params.id as string);
           console.log("ExpertProfilePage - Raw expert data:", expertData);
           
@@ -50,9 +51,11 @@ export default function ExpertProfilePage() {
           }
         } catch (expertError) {
           console.error("Error fetching expert profile:", expertError);
+          
           // If expert profile fetch fails, try dashboard data as fallback
           if (isAuthenticated) {
             try {
+              console.log("Attempting to fetch dashboard data as fallback");
               const dashboardResponse = await apiClient.get('/common/dashboard');
               console.log("Dashboard API Response:", dashboardResponse.data);
               
@@ -100,10 +103,40 @@ export default function ExpertProfilePage() {
               console.error("Error fetching dashboard data:", dashboardError);
             }
           }
+          
+          // If both API calls fail, create a minimal expert profile with the ID
+          console.log("Creating minimal expert profile with ID:", params.id);
+          const minimalExpert: ExpertProfile = {
+            id: params.id as string,
+            username: "expert",
+            firstName: "Expert",
+            lastName: "User",
+            profilePicture: "/default-avatar.png",
+            bio: "Expert profile information is currently unavailable.",
+            followers: 0,
+            following: 0,
+            joinedAt: new Date().toISOString(),
+            specialization: "Unknown",
+            sessionRate: 0,
+            rating: 0,
+            appointments: 0,
+            description: "Expert profile information is currently unavailable.",
+            happyClients: 0,
+            booked: 0,
+            isFollowing: false,
+            location: "Unknown",
+            userLocation: "Unknown",
+            myExpertise: [],
+            currentlyWorking: false,
+            experience: "Unknown",
+            portfolio: [],
+            videobots: [],
+            sessions: []
+          };
+          
+          setExpert(minimalExpert);
+          setError("API services are currently unavailable. Showing limited profile information.");
         }
-        
-        // If we get here, both attempts failed
-        setError("Failed to load expert profile");
       } catch (err) {
         console.error("Error in fetchExpertData:", err);
         setError(err instanceof Error ? err.message : "Failed to load expert profile");

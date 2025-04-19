@@ -51,7 +51,7 @@ export const getExpertProfile = async (expertId: string): Promise<ExpertProfile>
         console.log('Guest login successful');
       } catch (guestError) {
         console.error('Guest login failed:', guestError);
-        throw new Error('Failed to authenticate as guest');
+        // Continue without guest login - some endpoints might work without authentication
       }
     }
     
@@ -59,86 +59,90 @@ export const getExpertProfile = async (expertId: string): Promise<ExpertProfile>
     const url = `${ApiEndpoints.getProfile}${expertId}`;
     console.log('API URL:', url);
     
-    const response = await apiClient.get(url);
+    try {
+      const response = await apiClient.get(url);
+      console.log('Raw API Response:', response.data);
 
-    console.log('Raw API Response:', response.data);
+      if (response.status === 200 && response.data?.body?.status === true) {
+        const data = response.data.body.data.Profile as ExpertProfileResponse;
+        // Keep the original portfolio data structure without transformation
+        const portfolio = response.data.body.data.Portfolio;
+        const videobots = response.data.body.data.Videobots as Videobot[] | undefined;
+        const allPortfolio = response.data.body.data.All_Portfolio as any[] | undefined;
+        
+        console.log('API Response Data:', data);
+        console.log('Expertise Data from API:', data.My_Expertise);
+        console.log('Portfolio Data from API:', portfolio);
+        console.log('Videobots Data from API:', videobots);
+        console.log('All Portfolio Data from API:', allPortfolio);
 
-    if (response.status === 200 && response.data?.body?.status === true) {
-      const data = response.data.body.data.Profile as ExpertProfileResponse;
-      // Keep the original portfolio data structure without transformation
-      const portfolio = response.data.body.data.Portfolio;
-      const videobots = response.data.body.data.Videobots as Videobot[] | undefined;
-      const allPortfolio = response.data.body.data.All_Portfolio as any[] | undefined;
-      
-      console.log('API Response Data:', data);
-      console.log('Expertise Data from API:', data.My_Expertise);
-      console.log('Portfolio Data from API:', portfolio);
-      console.log('Videobots Data from API:', videobots);
-      console.log('All Portfolio Data from API:', allPortfolio);
-
-      // Transform the API response to match our ExpertProfile type
-      const transformedData: ExpertProfile = {
-        id: data.id || '',
-        username: data.Username,
-        firstName: data.First_Name,
-        lastName: data.Last_Name,
-        profilePicture: data.Profile_Picture,
-        bio: data.bio,
-        followers: data.Follower,
-        following: data.Following,
-        joinedAt: data.Joined_At,
-        specialization: data.Specialization_Name,
-        sessionRate: data.Session_Rate,
-        rating: data.Rating,
-        appointments: data.Consultations,
-        description: data.Description,
-        happyClients: data.Happy_Clients,
-        booked: data.Booked,
-        isFollowing: data.isFollowing,
-        location: data.Location,
-        userLocation: data.User_Location,
-        myExpertise: data.My_Expertise,
-        currentlyWorking: data.Currently_Working,
-        experience: data.Experience,
-        consultations: data.Consultations,
-        // Include the raw response data for components that need it
-        body: {
-          data: {
-            profile: {
-              id: data.id,
-              name: data.First_Name ? `${data.First_Name} ${data.Last_Name || ''}` : data.Username,
-              username: data.Username,
-              profilePicture: data.Profile_Picture,
-              specializationName: data.Specialization_Name,
-              rating: data.Rating,
-              followers: data.Follower,
-              following: data.Following,
-              joinedAt: data.Joined_At,
-              consultations: data.Consultations,
-              description: data.Description,
-              booked: data.Booked,
-              experience: data.Experience,
-              sessionRate: data.Session_Rate,
-              userLocation: data.User_Location,
-              myExpertise: data.My_Expertise
-            },
-            // Keep the original portfolio data structure
-            portfolio: portfolio,
-            videobots: videobots,
-            allPortfolio: allPortfolio
+        // Transform the API response to match our ExpertProfile type
+        const transformedData: ExpertProfile = {
+          id: data.id || '',
+          username: data.Username,
+          firstName: data.First_Name,
+          lastName: data.Last_Name,
+          profilePicture: data.Profile_Picture,
+          bio: data.bio,
+          followers: data.Follower,
+          following: data.Following,
+          joinedAt: data.Joined_At,
+          specialization: data.Specialization_Name,
+          sessionRate: data.Session_Rate,
+          rating: data.Rating,
+          appointments: data.Consultations,
+          description: data.Description,
+          happyClients: data.Happy_Clients,
+          booked: data.Booked,
+          isFollowing: data.isFollowing,
+          location: data.Location,
+          userLocation: data.User_Location,
+          myExpertise: data.My_Expertise,
+          currentlyWorking: data.Currently_Working,
+          experience: data.Experience,
+          consultations: data.Consultations,
+          // Include the raw response data for components that need it
+          body: {
+            data: {
+              profile: {
+                id: data.id,
+                name: data.First_Name ? `${data.First_Name} ${data.Last_Name || ''}` : data.Username,
+                username: data.Username,
+                profilePicture: data.Profile_Picture,
+                specializationName: data.Specialization_Name,
+                rating: data.Rating,
+                followers: data.Follower,
+                following: data.Following,
+                joinedAt: data.Joined_At,
+                consultations: data.Consultations,
+                description: data.Description,
+                booked: data.Booked,
+                experience: data.Experience,
+                sessionRate: data.Session_Rate,
+                userLocation: data.User_Location,
+                myExpertise: data.My_Expertise
+              },
+              // Keep the original portfolio data structure
+              portfolio: portfolio,
+              videobots: videobots,
+              allPortfolio: allPortfolio
+            }
           }
-        }
-      };
+        };
 
-      console.log('Transformed Expert Profile:', transformedData);
-      console.log('Transformed Expertise Data:', transformedData.myExpertise);
-      console.log('Transformed Portfolio Data:', transformedData.body?.data?.portfolio);
-      console.log('Transformed Videobots Data:', transformedData.body?.data?.videobots);
-      console.log('Transformed All Portfolio Data:', transformedData.body?.data?.allPortfolio);
+        console.log('Transformed Expert Profile:', transformedData);
+        console.log('Transformed Expertise Data:', transformedData.myExpertise);
+        console.log('Transformed Portfolio Data:', transformedData.body?.data?.portfolio);
+        console.log('Transformed Videobots Data:', transformedData.body?.data?.videobots);
+        console.log('Transformed All Portfolio Data:', transformedData.body?.data?.allPortfolio);
 
-      return transformedData;
-    } else {
-      throw new Error('Invalid response format from API');
+        return transformedData;
+      } else {
+        throw new Error('Invalid response format from API');
+      }
+    } catch (apiError) {
+      console.error('API Error:', apiError);
+      throw apiError;
     }
   } catch (error) {
     console.error('Error in getExpertProfile:', error);

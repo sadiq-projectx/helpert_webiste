@@ -50,6 +50,14 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
+    // Log the full error for debugging
+    console.error("API Error:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      url: error.config?.url,
+      method: error.config?.method
+    });
+
     if (error.response?.status === 401) {
       console.error("Unauthorized: Token is invalid or expired.");
       // Clear tokens and redirect to login page
@@ -64,6 +72,23 @@ apiClient.interceptors.response.use(
       console.error("Forbidden: You don't have permission to access this resource.");
       // For 403 errors, we might want to handle differently than 401
       // For now, we'll just log it
+    } else if (error.response?.status === 404) {
+      console.error("Not Found: The requested resource does not exist.");
+      // For 404 errors, we'll create a more user-friendly error response
+      // This helps components handle missing data gracefully
+      return Promise.reject({
+        ...error,
+        response: {
+          ...error.response,
+          data: {
+            body: {
+              status: false,
+              message: "The requested resource does not exist.",
+              data: null
+            }
+          }
+        }
+      });
     } else if (error.response?.status === 500) {
       console.error("Server Error:", error.response.data);
     } else {
