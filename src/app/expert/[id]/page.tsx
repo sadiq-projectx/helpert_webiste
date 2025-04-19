@@ -38,68 +38,74 @@ export default function ExpertProfilePage() {
         setIsLoading(true);
         setError(null);
         
-        // First try to get expert data from the dashboard if authenticated
-        if (isAuthenticated) {
-          try {
-            const dashboardResponse = await apiClient.get('/common/dashboard');
-            console.log("Dashboard API Response:", dashboardResponse.data);
-            
-            if (dashboardResponse.data?.body?.data?.top_rated_experts) {
-              // Find the expert in the top_rated_experts array
-              const expertFromDashboard = dashboardResponse.data.body.data.top_rated_experts.find(
-                (e: any) => e.id === params.id
-              );
+        // First try to get expert data directly from the expert profile API
+        try {
+          const expertData = await getExpertProfile(params.id as string);
+          console.log("ExpertProfilePage - Raw expert data:", expertData);
+          
+          if (expertData) {
+            setExpert(expertData as ExpertProfile);
+            setIsLoading(false);
+            return;
+          }
+        } catch (expertError) {
+          console.error("Error fetching expert profile:", expertError);
+          // If expert profile fetch fails, try dashboard data as fallback
+          if (isAuthenticated) {
+            try {
+              const dashboardResponse = await apiClient.get('/common/dashboard');
+              console.log("Dashboard API Response:", dashboardResponse.data);
               
-              if (expertFromDashboard) {
-                console.log("Found expert in dashboard data:", expertFromDashboard);
-                // Transform the dashboard expert data to match our ExpertProfile type
-                const transformedExpert: ExpertProfile = {
-                  id: expertFromDashboard.id,
-                  username: expertFromDashboard.username,
-                  firstName: expertFromDashboard.first_name,
-                  lastName: expertFromDashboard.last_name,
-                  profilePicture: expertFromDashboard.profile_picture,
-                  specialization: expertFromDashboard.specialization,
-                  sessionRate: expertFromDashboard.session_rate,
-                  rating: expertFromDashboard.rating,
-                  appointments: expertFromDashboard.appointments,
-                  // Add other fields with default values
-                  bio: "",
-                  followers: 0,
-                  following: 0,
-                  joinedAt: new Date().toISOString(),
-                  description: "",
-                  happyClients: 0,
-                  booked: 0,
-                  isFollowing: false,
-                  location: "",
-                  userLocation: "",
-                  myExpertise: [],
-                  currentlyWorking: false,
-                  experience: "",
-                  portfolio: [],
-                  videobots: [],
-                  sessions: []
-                };
+              if (dashboardResponse.data?.body?.data?.top_rated_experts) {
+                const expertFromDashboard = dashboardResponse.data.body.data.top_rated_experts.find(
+                  (e: any) => e.id === params.id
+                );
                 
-                setExpert(transformedExpert);
-                setIsLoading(false);
-                return;
+                if (expertFromDashboard) {
+                  console.log("Found expert in dashboard data:", expertFromDashboard);
+                  const transformedExpert: ExpertProfile = {
+                    id: expertFromDashboard.id,
+                    username: expertFromDashboard.username,
+                    firstName: expertFromDashboard.first_name,
+                    lastName: expertFromDashboard.last_name,
+                    profilePicture: expertFromDashboard.profile_picture,
+                    specialization: expertFromDashboard.specialization,
+                    sessionRate: expertFromDashboard.session_rate,
+                    rating: expertFromDashboard.rating,
+                    appointments: expertFromDashboard.appointments,
+                    bio: "",
+                    followers: 0,
+                    following: 0,
+                    joinedAt: new Date().toISOString(),
+                    description: "",
+                    happyClients: 0,
+                    booked: 0,
+                    isFollowing: false,
+                    location: "",
+                    userLocation: "",
+                    myExpertise: [],
+                    currentlyWorking: false,
+                    experience: "",
+                    portfolio: [],
+                    videobots: [],
+                    sessions: []
+                  };
+                  
+                  setExpert(transformedExpert);
+                  setIsLoading(false);
+                  return;
+                }
               }
+            } catch (dashboardError) {
+              console.error("Error fetching dashboard data:", dashboardError);
             }
-          } catch (dashboardError) {
-            console.error("Error fetching dashboard data:", dashboardError);
-            // Continue to fetch expert profile directly if dashboard fetch fails
           }
         }
         
-        // If not authenticated or expert not found in dashboard, fetch directly
-        const expertData = await getExpertProfile(params.id as string);
-        console.log("ExpertProfilePage - Raw expert data:", expertData);
-        
-        setExpert(expertData as ExpertProfile);
+        // If we get here, both attempts failed
+        setError("Failed to load expert profile");
       } catch (err) {
-        console.error("Error fetching expert data:", err);
+        console.error("Error in fetchExpertData:", err);
         setError(err instanceof Error ? err.message : "Failed to load expert profile");
       } finally {
         setIsLoading(false);

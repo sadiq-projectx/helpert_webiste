@@ -16,6 +16,9 @@ const nextConfig = {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.helperts.com',
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://helperts.com',
   },
+  images: {
+    domains: ['helpert-user-avatars.s3.ap-south-1.amazonaws.com'],
+  },
 }
 
 module.exports = nextConfig 
