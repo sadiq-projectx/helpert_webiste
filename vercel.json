@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "next build",
+  "buildCommand": "npm install && next build",
   "devCommand": "next dev",
   "installCommand": "npm install",
   "framework": "nextjs",
@@ -31,5 +31,16 @@
   ],
   "github": {
     "silent": true
-  }
+  },
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 0 * * *"
+    }
+  ]
 } 
