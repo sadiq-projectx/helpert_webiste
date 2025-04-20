@@ -7,6 +7,15 @@ import { searchService, SearchExpertData, SpecializationData } from '@/services/
 import Image from 'next/image';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import { USER_DEFAULT } from '@/constants/assets/imageConstants';
+
+// Helper function to validate and get the correct image URL
+const getImageUrl = (url: string | null | undefined): string => {
+  if (!url || !(url.startsWith("http://") || url.startsWith("https://"))) {
+    return USER_DEFAULT;
+  }
+  return url;
+};
 
 export default function SearchPage() {
   const router = useRouter();
@@ -81,18 +90,6 @@ export default function SearchPage() {
     setCurrentPage(page);
   };
 
-  // Helper function to validate and get the correct image URL
-  const getImageUrl = (url: string) => {
-    if (!url || url === 'url' || url === 'temp_url') {
-      return '/images/default-avatar.png';
-    }
-    // Ensure URL starts with http:// or https:// or /
-    if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
-      return '/images/default-avatar.png';
-    }
-    return url;
-  };
-
   return (
     <div className="min-h-screen bg-[#0F1629] text-white">
       <div className="container mx-auto px-4 py-8">
@@ -156,7 +153,7 @@ export default function SearchPage() {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-400">
-            Found {totalItems} experts
+            Found {totalItems} Experts
           </p>
         </div>
 
@@ -202,23 +199,25 @@ export default function SearchPage() {
 }
 
 function ExpertCard({ expert }: { expert: SearchExpertData }) {
-  // Helper function to validate and get the correct image URL
-  const getImageUrl = (url: string) => {
-    if (!url || url === 'url' || url === 'temp_url') {
-      return '/images/default-avatar.png';
+  const getImageUrl = (url: string | null | undefined): string => {
+    if (!url || !(url.startsWith("http://") || url.startsWith("https://"))) {
+      return USER_DEFAULT;
     }
     return url;
   };
 
+  const isDefaultAvatar = !expert.profile_picture || expert.profile_picture === 'url' || expert.profile_picture === 'temp_url';
+
   return (
-    <Link href={`/expert/${expert.username}`}>
+    <Link href={`/expert/${expert.id}`}>
       <div className="bg-[#1C2537] rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-200">
         <div className="relative h-48">
           <Image
             src={getImageUrl(expert.profile_picture)}
             alt={`${expert.first_name} ${expert.last_name}`}
             fill
-            className="object-cover"
+            className={`object-cover ${isDefaultAvatar ? 'object-contain p-4' : 'object-cover'}`}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {expert.isFollowing && (
             <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
