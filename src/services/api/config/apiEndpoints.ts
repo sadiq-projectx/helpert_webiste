@@ -87,6 +87,9 @@ const ApiEndpoints = {
   getScheduleDayAndTime: `${BASE_URL}/expert/slots/all`,
   forceUpdate: `${BASE_URL}/common/forceUpdate`,
 
+  // Search Endpoints
+  searchExperts: `${BASE_URL}/expert/search`,
+
   // Payment Endpoints
   addPaymentMethodUpi: `${BASE_URL}/payment/add/upi`,
   addPaymentMethodBank: `${BASE_URL}/payment/add/bank`,
