@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Appointment, AppointmentStatus } from '@/types/appointment';
 import { appointmentService } from '@/services/api/appointment/appointmentService';
-import { AppointmentTile } from '@/components/appointments/AppointmentTile';
+import { AppointmentCard } from '@/components/appointments/AppointmentCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Plus, Calendar, AlertCircle } from 'lucide-react';
@@ -13,17 +13,18 @@ const tabs: { value: AppointmentStatus; label: string }[] = [
   { value: 'pending', label: 'Pending' },
   { value: 'upcoming', label: 'Upcoming' },
   { value: 'completed', label: 'Completed' },
-  { value: 'rejected', label: 'Rejected' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 export default function AppointmentsPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<AppointmentStatus>('upcoming');
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [activeTab, setActiveTab] = useState<AppointmentStatus>('pending');
+  const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('Tab changed, fetching appointments for:', activeTab);
     fetchAppointments();
   }, [activeTab]);
 
@@ -31,65 +32,52 @@ export default function AppointmentsPage() {
     try {
       setLoading(true);
       setError(null);
-      console.log('Fetching appointments for tab:', activeTab);
+      console.log('🔄 Fetching appointments...', {
+        activeTab,
+        currentAppointments: allAppointments.length
+      });
       
       const response = await appointmentService.getAllAppointments({ status: activeTab });
-      console.log('Appointments fetched successfully:', response);
+      console.log('📥 Raw API Response:', JSON.stringify(response, null, 2));
       
       if (response.success) {
-        setAppointments(response.data);
+        console.log('✅ Appointments fetched successfully:', {
+          count: response.data.length,
+          appointments: response.data
+        });
+        setAllAppointments(response.data);
       } else {
-        console.error('API returned unsuccessful response:', response);
+        console.error('❌ API returned unsuccessful response:', {
+          success: response.success,
+          message: response.message,
+          data: response.data
+        });
         setError(response.message || 'Failed to fetch appointments');
       }
     } catch (error) {
-      console.error('Error in fetchAppointments:', error);
+      console.error('🚨 Error in fetchAppointments:', {
+        error,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+      });
       setError('An error occurred while fetching appointments. Please try again later.');
     } finally {
       setLoading(false);
+      console.log('🏁 Fetch appointments completed', {
+        success: !error,
+        appointmentsCount: allAppointments.length,
+        hasError: !!error
+      });
     }
   };
 
-  const handleStatusChange = async (appointmentId: string, status: AppointmentStatus) => {
-    try {
-      console.log('Changing appointment status:', { appointmentId, status });
-      await appointmentService.updateAppointmentStatus(appointmentId, status);
-      console.log('Appointment status updated successfully');
-      fetchAppointments();
-    } catch (error) {
-      console.error('Error updating appointment status:', error);
-      setError('Failed to update appointment status. Please try again.');
-    }
+  const handleAppointmentClick = (appointmentId: string) => {
+    router.push(`/appointments/${appointmentId}`);
   };
 
-  const handleJoinCall = async (appointmentId: string) => {
-    try {
-      console.log('Joining call for appointment:', appointmentId);
-      const { token } = await appointmentService.getAgoraToken(appointmentId);
-      console.log('Agora token received:', token);
-      // Implement your video call logic here using the token
-    } catch (error) {
-      console.error('Error joining call:', error);
-      setError('Failed to join the call. Please try again.');
-    }
-  };
-
-  const handleReschedule = (appointmentId: string) => {
-    console.log('Rescheduling appointment:', appointmentId);
-    // Implement reschedule logic
-  };
-
-  const handleCancel = async (appointmentId: string) => {
-    try {
-      console.log('Cancelling appointment:', appointmentId);
-      await appointmentService.updateAppointmentStatus(appointmentId, 'cancelled');
-      console.log('Appointment cancelled successfully');
-      fetchAppointments();
-    } catch (error) {
-      console.error('Error cancelling appointment:', error);
-      setError('Failed to cancel appointment. Please try again.');
-    }
-  };
+  // Filter appointments based on the active tab
+  const filteredAppointments = allAppointments.filter(appointment => 
+    appointment.appointment_details.status.toLowerCase() === activeTab.toLowerCase()
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -108,7 +96,7 @@ export default function AppointmentsPage() {
         </div>
       )}
 
-      <Tabs defaultValue="upcoming" className="w-full">
+      <Tabs defaultValue="pending" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           {tabs.map((tab) => (
             <TabsTrigger
@@ -127,16 +115,13 @@ export default function AppointmentsPage() {
               <div className="flex justify-center items-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
               </div>
-            ) : appointments.length > 0 ? (
+            ) : filteredAppointments.length > 0 ? (
               <div className="space-y-4">
-                {appointments.map((appointment) => (
-                  <AppointmentTile
-                    key={appointment.id}
+                {filteredAppointments.map((appointment) => (
+                  <AppointmentCard
+                    key={appointment.appointment_details.id}
                     appointment={appointment}
-                    onStatusChange={handleStatusChange}
-                    onJoinCall={handleJoinCall}
-                    onReschedule={handleReschedule}
-                    onCancel={handleCancel}
+                    onClick={() => handleAppointmentClick(appointment.appointment_details.id)}
                   />
                 ))}
               </div>

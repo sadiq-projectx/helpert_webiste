@@ -56,10 +56,41 @@ export const AppointmentTile: React.FC<AppointmentTileProps> = ({
   onReschedule,
   onCancel,
 }) => {
-  const formattedDate = format(new Date(appointment.date), 'EEEE, MMMM d, yyyy');
-  const isUpcoming = appointment.status === 'upcoming';
-  const isPending = appointment.status === 'pending';
-  const isCompleted = appointment.status === 'completed';
+  const formatDate = (dateString: string) => {
+    try {
+      // First try parsing the date string directly
+      const date = new Date(dateString);
+      
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        // If invalid, try parsing the date parts separately
+        const [year, month, day] = dateString.split('-').map(Number);
+        if (year && month && day) {
+          const newDate = new Date(year, month - 1, day);
+          if (!isNaN(newDate.getTime())) {
+            return format(newDate, 'EEEE, MMMM d, yyyy');
+          }
+        }
+        return 'Invalid date';
+      }
+      
+      return format(date, 'EEEE, MMMM d, yyyy');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
+  };
+
+  const formattedDate = formatDate(appointment.date);
+  const status = appointment.status || 'pending';
+  const isUpcoming = status === 'upcoming';
+  const isPending = status === 'pending';
+  const isCompleted = status === 'completed';
+
+  const formatStatus = (status: string) => {
+    if (!status) return 'Unknown';
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
@@ -88,8 +119,8 @@ export const AppointmentTile: React.FC<AppointmentTileProps> = ({
               <span className="ml-1">{appointment.type}</span>
             </div>
             <div className="mt-2">
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(appointment.status)}`}>
-                {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
+                {formatStatus(status)}
               </span>
             </div>
           </div>
