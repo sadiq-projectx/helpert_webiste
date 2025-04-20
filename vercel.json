@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm install && next build",
+  "buildCommand": "npm run build",
   "devCommand": "next dev",
   "installCommand": "npm install",
   "framework": "nextjs",
@@ -41,6 +41,12 @@
     {
       "path": "/api/cron",
       "schedule": "0 0 * * *"
+    }
+  ],
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
     }
   ]
 } 
