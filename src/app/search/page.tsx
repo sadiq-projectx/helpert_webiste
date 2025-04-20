@@ -40,10 +40,10 @@ export default function SearchPage() {
     }
   };
 
-  const fetchExperts = async () => {
+  const fetchExperts = async (searchQuery?: string) => {
     setIsLoading(true);
     try {
-      const query = selectedSpecialization || searchQuery || 'a';
+      const query = searchQuery || selectedSpecialization || 'a';
       const response = await searchService.searchExperts(query, expertsPerPage, currentPage);
       if (response.status === 200 && response.body.status) {
         const { experts, totalItems, totalPages, currentPage: page } = response.body.data;
@@ -64,9 +64,17 @@ export default function SearchPage() {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    const query = e.target.value;
+    setSearchQuery(query);
     setCurrentPage(1);
     setSelectedSpecialization('');
+
+    // Debounce the search to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      fetchExperts(query);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   };
 
   const handlePageChange = (page: number) => {
