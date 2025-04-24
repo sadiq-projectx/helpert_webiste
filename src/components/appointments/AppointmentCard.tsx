@@ -4,30 +4,23 @@ import { Video, Clock, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Expert {
+  id: string;
   name: string;
   specialization: string[];
   rating: number;
   profile_picture: string;
 }
 
-interface AppointmentDetails {
-  id: string;
-  status: string;
-  approval_status: string;
-  date: string;
-  day: string;
-  time: string;
-}
-
-interface Payment {
-  status: string;
-}
-
 interface Appointment {
+  id: string;
+  bookingId: string;
   expert: Expert;
-  appointment_details: AppointmentDetails;
+  appointmentDate: string;
+  timeSlot: string;
+  appointmentStatus: string;
+  appointmentApprovalStatus: string;
   discussion_topic: string;
-  payment: Payment;
+  amount: number;
 }
 
 interface AppointmentCardProps {
@@ -49,7 +42,7 @@ const getStatusColor = (status: string) => {
 };
 
 export const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment, onClick }) => {
-  const { expert, appointment_details } = appointment;
+  const { expert, appointmentStatus, timeSlot } = appointment;
 
   return (
     <div className="p-4">
@@ -77,16 +70,16 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment, o
               <span>Video call - </span>
               <span className={cn(
                 "ml-1 px-2 py-0.5 rounded-full text-xs font-medium",
-                getStatusColor(appointment_details.status)
+                getStatusColor(appointmentStatus)
               )}>
-                {appointment_details.status}
+                {appointmentStatus}
               </span>
             </div>
             
             <div className="mt-2 flex items-center justify-between">
               <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                 <Clock className="w-4 h-4 mr-1 text-primary" />
-                <span>{appointment_details.time}</span>
+                <span>{timeSlot}</span>
               </div>
               
               <div className="px-3 py-1 rounded-full border border-primary/20 bg-primary/10">

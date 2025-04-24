@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Appointment, AppointmentStatus } from '@/types/appointment';
+import { AppointmentStatus } from '@/types/appointment';
 import { appointmentService } from '@/services/api/appointment/appointmentService';
 import { AppointmentCard } from '@/components/appointments/AppointmentCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,10 +16,34 @@ const tabs: { value: AppointmentStatus; label: string }[] = [
   { value: 'cancelled', label: 'Cancelled' },
 ];
 
+interface AppointmentResponse {
+  success: boolean;
+  message: string;
+  data: Appointment[];
+}
+
+interface Appointment {
+  id: string;
+  bookingId: string;
+  expert: {
+    id: string;
+    name: string;
+    profile_picture: string;
+    specialization: string[];
+    rating: number;
+  };
+  appointmentDate: string;
+  timeSlot: string;
+  appointmentStatus: string;
+  appointmentApprovalStatus: string;
+  discussion_topic: string;
+  amount: number;
+}
+
 export default function AppointmentsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<AppointmentStatus>('pending');
-  const [allAppointments, setAllAppointments] = useState<any[]>([]);
+  const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,10 +64,9 @@ export default function AppointmentsPage() {
       const response = await appointmentService.getAllAppointments({ status: activeTab });
       console.log('📥 Raw API Response:', JSON.stringify(response, null, 2));
       
-      if (response.success) {
+      if (response.success && Array.isArray(response.data)) {
         console.log('✅ Appointments fetched successfully:', {
-          count: response.data.length,
-          appointments: response.data
+          count: response.data.length
         });
         setAllAppointments(response.data);
       } else {
@@ -76,7 +99,7 @@ export default function AppointmentsPage() {
 
   // Filter appointments based on the active tab
   const filteredAppointments = allAppointments.filter(appointment => 
-    appointment.appointment_details.status.toLowerCase() === activeTab.toLowerCase()
+    appointment.appointmentStatus.toLowerCase() === activeTab.toLowerCase()
   );
 
   return (
@@ -119,9 +142,9 @@ export default function AppointmentsPage() {
               <div className="space-y-4">
                 {filteredAppointments.map((appointment) => (
                   <AppointmentCard
-                    key={appointment.appointment_details.id}
+                    key={appointment.id}
                     appointment={appointment}
-                    onClick={() => handleAppointmentClick(appointment.appointment_details.id)}
+                    onClick={() => handleAppointmentClick(appointment.id)}
                   />
                 ))}
               </div>

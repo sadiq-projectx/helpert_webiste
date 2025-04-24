@@ -28,6 +28,11 @@ const ApiEndpoints = {
   updateAppointmentStatus: `${BASE_URL}/appointments/approval/status/`,
   updateAppointment: `${BASE_URL}/appointments/update`,
   getAgoraTokenByAppointmentId: `${BASE_URL}/appointments/agora`,
+  appointments: {
+    getAll: '/appointments',
+    getDetails: (id: string) => `/appointments/${id}`,
+    updateStatus: (id: string) => `/appointments/${id}/status`,
+  },
 
   // Video Endpoints
   uploadVideo: `${BASE_URL}/video/upload`,

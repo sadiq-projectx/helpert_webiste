@@ -1,23 +1,23 @@
 export type AppointmentStatus = 'pending' | 'upcoming' | 'completed' | 'cancelled';
 
+export interface Expert {
+  id: string;
+  name: string;
+  profile_picture: string;
+  specialization: string[];
+  rating: number;
+}
+
 export interface Appointment {
   id: string;
-  expertId: string;
-  expertName: string;
-  expertImage: string;
-  userId: string;
-  userName: string;
-  userImage: string;
-  date: string;
-  time: string;
-  duration: number;
-  status: AppointmentStatus;
-  type: 'video' | 'audio' | 'chat';
-  price: number;
-  currency: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  bookingId: string;
+  expert: Expert;
+  appointmentDate: string;
+  timeSlot: string;
+  appointmentStatus: string;
+  appointmentApprovalStatus: string;
+  discussion_topic: string;
+  amount: number;
 }
 
 export interface AppointmentFilters {
@@ -29,6 +29,6 @@ export interface AppointmentFilters {
 
 export interface AppointmentResponse {
   success: boolean;
-  data: Appointment[];
-  message?: string;
+  message: string;
+  data: Appointment | Appointment[];
 } 
