@@ -32,15 +32,15 @@ class VideoService {
         data: {
           videos: (body.data.videos || []).map((video: any) => ({
             id: video.id,
-            videoTitle: video.video_title,
             videoUrl: video.video_path,
             thumbnailUrl: video.thumbnail_path,
-            expertId: video.expert_id,
-            expertName: video.expert_name,
-            expertImage: video.expert_image,
-            tagList: video.tag_list || [],
-            expertSpecialization: video.expert_specialization,
-            videoViews: video.video_views,
+            videoTitle: video.video_title ?? video.videoTitle,
+            expertName: video.expert_name ?? undefined,
+            expertImage: video.expert_image ?? undefined,
+            likesCount: video.video_likes ?? undefined,
+            commentsCount: video.video_comments_count ?? undefined,
+            isLiked: video.is_liked ?? undefined,
+            expertSpecialization: video.expert_specialization ?? undefined,
           })),
           categories: body.data.categories || [],
           hasReachedMax: false // You can add logic if your API supports this
@@ -48,6 +48,32 @@ class VideoService {
       };
     } catch (error) {
       console.error('Error fetching videos:', error);
+      throw error;
+    }
+  }
+
+  async getVideoById(videoId: string) {
+    try {
+      const response = await apiClient.get(`/video/${videoId}`);
+      const { status, body } = response.data;
+      if (!body?.status) {
+        throw new Error(body?.message || 'Failed to fetch video');
+      }
+      const video = body.data.video;
+      return {
+        id: video.id,
+        videoUrl: video.video_path,
+        thumbnailUrl: video.thumbnail_path,
+        videoTitle: video.video_title ?? video.videoTitle,
+        expertName: video.expert_name ?? undefined,
+        expertImage: video.expert_image ?? undefined,
+        likesCount: video.video_likes ?? undefined,
+        commentsCount: video.video_comments_count ?? undefined,
+        isLiked: video.is_liked ?? undefined,
+        expertSpecialization: video.expert_specialization ?? undefined,
+      };
+    } catch (error) {
+      console.error('Error fetching video by id:', error);
       throw error;
     }
   }
@@ -66,6 +92,16 @@ class VideoService {
 
   async removeBookmark(videoId: string): Promise<void> {
     await apiClient.delete(`${this.baseUrl}/api/v1/videos/${videoId}/bookmark`);
+  }
+
+  async incrementVideoView(videoId: string): Promise<void> {
+    try {
+      // Use the viewVideo endpoint from ApiEndpoints
+      await apiClient.post(`${require('@/services/api/config/apiEndpoints').default.viewVideo}${videoId}`);
+    } catch (error) {
+      console.error('Error incrementing video view:', error);
+      throw error;
+    }
   }
 }
 

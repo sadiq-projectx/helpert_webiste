@@ -87,7 +87,7 @@ export default function FeedPage() {
   };
 
   const handleVideoClick = (videoId: string) => {
-    router.push(`/video/${videoId}`);
+    router.push(`/feed/shorts?start=${videoId}`);
   };
 
   return (
