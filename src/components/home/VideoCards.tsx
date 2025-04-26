@@ -137,7 +137,7 @@ const VideoCards: React.FC<VideoCardsProps> = ({ videos }) => {
           <Image src={IC_VIDEO} alt="" width={22} height={22} aria-hidden="true" className="opacity-80"/>
           <h2 className="text-xl font-semibold text-text-color tracking-tight">Featured Videos</h2>
         </div>
-        <Link href="/video-feed" className="text-primary hover:text-primary/80 text-sm font-medium transition-colors">
+        <Link href="/feed" className="text-primary hover:text-primary/80 text-sm font-medium transition-colors">
           View More
         </Link>
       </div>

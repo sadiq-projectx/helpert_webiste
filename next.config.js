@@ -8,7 +8,12 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://helperts.com',
   },
   images: {
-    domains: ['helpert-user-avatars.s3.ap-south-1.amazonaws.com'],
+    domains: [
+      'picsum.photos',    // For random images
+      'i.pravatar.cc',     // For avatar images
+      'helpert-user-avatars.s3.ap-south-1.amazonaws.com',
+      'via.placeholder.com'
+    ],
   },
   // Add production optimizations
   poweredByHeader: false,
