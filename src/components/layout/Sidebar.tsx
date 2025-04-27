@@ -12,7 +12,7 @@ const Sidebar = () => {
   const navItems = [
     { label: "Home", href: "/home", icon: <FaHome /> },
     { label: "Meetings", href: "/appointments", icon: <FaCalendarAlt /> },
-    { label: "Feed", href: "/video-feed", icon: <FaVideo /> },
+    { label: "Feed", href: "/feed", icon: <FaVideo /> },
     { label: "Messages", href: "/messages", icon: <FaComments /> },
     { label: "Profile", href: "/profile", icon: <FaUser /> },
   ];

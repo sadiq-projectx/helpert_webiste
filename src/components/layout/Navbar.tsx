@@ -21,7 +21,7 @@ const Navbar = () => {
   const navItems = [
     { label: "Home", href: "/", icon: <Home size={20} /> },
     { label: "Meetings", href: "/appointments", icon: <Calendar size={20} /> },
-    { label: "Feed", href: "/video-feed", icon: <Flame size={20} /> },
+    { label: "Feed", href: "/feed", icon: <Flame size={20} /> },
     { label: "Messages", href: "/messages", icon: <MessageCircle size={20} /> },
     { label: "Profile", href: "/profile", icon: <User size={20} /> },
   ];
